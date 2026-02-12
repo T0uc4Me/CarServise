@@ -277,3 +277,52 @@ h1 {
   border-radius: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
+/* Unified design refresh */
+body {
+  font-family: "Unbounded", Arial, sans-serif;
+  background: radial-gradient(circle at top, #2a2743 0%, #0f0e17 62%);
+}
+
+.header-container,
+.order-item,
+.auth-container,
+.order-info,
+.client-info,
+.car-info,
+.used-parts,
+.popup-content,
+.details-table {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.26);
+}
+
+.auth-container {
+  background: rgba(58, 58, 90, 0.82);
+  border-radius: 18px;
+  padding: 28px;
+}
+
+.form-group input,
+.form-group select {
+  border-radius: 12px;
+  padding: 11px 12px;
+}
+
+.auth-button,
+.logout-button,
+.view-button,
+.back-button,
+.add-button {
+  border-radius: 999px;
+  transition: all 0.2s ease;
+}
+
+.auth-button:hover,
+.logout-button:hover,
+.view-button:hover,
+.back-button:hover,
+.add-button:hover {
+  transform: translateY(-1px);
+}
