@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../db/connection');
+const db = require('../db/database');
 
 // GET запрос для страницы личного кабинета
 router.get('/', async (req, res) => {
@@ -11,17 +11,34 @@ router.get('/', async (req, res) => {
         }
 
         // Получение информации о пользователе
-        const [userRows] = await db.promise().query('SELECT FIO, phone FROM customers WHERE customer_id = ?', [userId]);
-        if (userRows.length === 0) {
-            return res.status(404).render('error', { message: 'Пользователь не найден.' });
-        }
-        const user = userRows[0];
+        db.get('SELECT first_name, last_name, phone, email, data_registrat, total_cost FROM Customers WHERE customer_id = ?', [userId], (err, user) => {
+            if (err) {
+                console.error(err);
+                return res.status(500).render('error', { message: 'Ошибка сервера.' });
+            }
+            if (!user) {
+                return res.status(404).render('error', { message: 'Пользователь не найден.' });
+            }
+            const fio = `${user.first_name} ${user.last_name}`;
 
-        // Получение списка машин пользователя
-        const [cars] = await db.promise().query('SELECT mark, model FROM car WHERE customers_customer_id = ?', [userId]);
+            // Получение списка машин пользователя
+            db.all('SELECT mark, model FROM Car WHERE Customers_customer_id = ?', [userId], (err, cars) => {
+                if (err) {
+                    console.error(err);
+                    return res.status(500).render('error', { message: 'Ошибка сервера.' });
+                }
 
-        // Рендер страницы с данными пользователя и автомобилей
-        res.render('4lk', { fio: user.FIO, phone: user.phone, cars });
+                // Рендер страницы с данными пользователя и автомобилей
+                res.render('4lk', { 
+                    fio: fio, 
+                    phone: user.phone,
+                    email: user.email,
+                    date: user.data_registrat,
+                    cost: user.total_cost,
+                    cars 
+                });
+            });
+        });
     } catch (error) {
         console.error(error);
         res.render('error', {
@@ -46,12 +63,17 @@ router.post('/add-car', async (req, res) => {
         }
 
         // Добавление нового автомобиля
-        await db.promise().query(
-            'INSERT INTO car (mark, model, customers_customer_id) VALUES (?, ?, ?)',
-            [mark, model, userId]
+        db.run(
+            'INSERT INTO Car (mark, model, Customers_customer_id) VALUES (?, ?, ?)',
+            [mark, model, userId],
+            function(err) {
+                if (err) {
+                    console.error(err);
+                    return res.status(500).json({ error: 'Ошибка сервера.' });
+                }
+                res.status(200).json({ message: 'Автомобиль успешно добавлен.' });
+            }
         );
-
-        res.status(200).json({ message: 'Автомобиль успешно добавлен.' });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Ошибка сервера.' });

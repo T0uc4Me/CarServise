@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const db = require("../db/connection");
+const db = require("../db/database");
 
 // GET запрос на страницу заказа
 router.get("/", async (req, res) => {
@@ -11,31 +11,47 @@ router.get("/", async (req, res) => {
     }
 
     // Получение имени пользователя
-    const [userRows] = await db
-      .promise()
-      .query("SELECT FIO FROM customers WHERE customer_id = ?", [userId]);
-    if (userRows.length === 0) {
-      return res
-        .status(404)
-        .render("error", { message: "Пользователь не найден." });
-    }
-    const userName = userRows[0].FIO;
+    db.get("SELECT first_name, last_name FROM Customers WHERE customer_id = ?", [userId], (err, userRow) => {
+      if (err) {
+        console.error(err);
+        return res
+          .status(500)
+          .render("error", { message: "Ошибка сервера." });
+      }
+      if (!userRow) {
+        return res
+          .status(404)
+          .render("error", { message: "Пользователь не найден." });
+      }
+      const userName = `${userRow.first_name} ${userRow.last_name}`;
 
-    // Получение списка автомобилей пользователя
-    const [cars] = await db
-      .promise()
-      .query(
-        "SELECT car_id, mark, model FROM car WHERE customers_customer_id = ?",
-        [userId]
+      // Получение списка автомобилей пользователя
+      db.all(
+        "SELECT car_id, mark, model FROM Car WHERE Customers_customer_id = ?",
+        [userId],
+        (err, cars) => {
+          if (err) {
+            console.error(err);
+            return res
+              .status(500)
+              .render("error", { message: "Ошибка сервера." });
+          }
+
+          // Получение списка услуг для отображения
+          db.all("SELECT servis_id, servis_name, servis_price FROM Servises", [], (err, services) => {
+            if (err) {
+              console.error(err);
+              return res
+                .status(500)
+                .render("error", { message: "Ошибка сервера." });
+            }
+
+            // Рендерим страницу, передавая имя пользователя, автомобили и услуги
+            res.render("9pd", { fio: userName, cars, services });
+          });
+        }
       );
-
-    // Получение списка услуг для отображения
-    const [services] = await db
-      .promise()
-      .query("SELECT servis_id, servis_name, servis_price FROM servises");
-
-    // Рендерим страницу, передавая имя пользователя, автомобили и услуги
-    res.render("9pd", { fio: userName, cars, services });
+    });
   } catch (error) {
     console.error(error);
     res.render("error", {
@@ -71,97 +87,166 @@ router.post("/", async (req, res) => {
       });
     }
 
-    const [employeeRows] = await db
-      .promise()
-      .query(
-        `SELECT employes_id FROM employes WHERE status = 'active' LIMIT 1`
-      );
+    db.all(
+      `SELECT employes_id FROM Employes WHERE status = 'active' LIMIT 1`,
+      [],
+      (err, employeeRows) => {
+        if (err) {
+          console.error(err);
+          return res.status(500).render("error", {
+            message: "Ошибка сервера.",
+            error: { status: 500, stack: err.stack },
+          });
+        }
 
-    if (employeeRows.length === 0) {
-      return res.status(500).render("error", {
-        message: "Нет доступных сотрудников для обработки заказа.",
-      });
-    }
-    const activeEmployeeId = employeeRows[0].employes_id;
+        if (employeeRows.length === 0) {
+          return res.status(500).render("error", {
+            message: "Нет доступных сотрудников для обработки заказа.",
+          });
+        }
+        const activeEmployeeId = employeeRows[0].employes_id;
 
-    let totalAmount = 0;
-    if (Array.isArray(services) && services.length > 0) {
-      for (const serviceId of services) {
-        const [serviceRows] = await db
-          .promise()
-          .query(`SELECT servis_price FROM servises WHERE servis_id = ?`, [
-            serviceId,
-          ]);
+        let totalAmount = 0;
+        const servicePromises = [];
 
-        if (serviceRows.length === 0) continue;
+        if (Array.isArray(services) && services.length > 0) {
+          for (const serviceId of services) {
+            servicePromises.push(new Promise((resolve, reject) => {
+              db.get(`SELECT servis_price FROM Servises WHERE servis_id = ?`, [serviceId], (err, serviceRow) => {
+                if (err) return reject(err);
+                if (!serviceRow) return resolve(0);
+                const servicePrice = parseFloat(serviceRow.servis_price) || 0;
+                const quantity = quantities[serviceId] || 1;
+                resolve(servicePrice * quantity);
+              });
+            }));
+          }
+        }
 
-        const servicePrice = parseFloat(serviceRows[0].servis_price) || 0;
-        const quantity = quantities[serviceId] || 1;
-        totalAmount += servicePrice * quantity;
+        Promise.all(servicePromises)
+          .then((amounts) => {
+            totalAmount = amounts.reduce((sum, current) => sum + current, 0);
+
+            // Вставляем заказ в таблицу servis_orders
+            db.run(
+              `INSERT INTO Servis_orders 
+                   (servis_data, order_status, address, Customers_customer_id, Car_car_id, Employes_employes_id, total_amount) 
+                   VALUES (DATE('now'), 'active', ?, ?, ?, ?, ?)`,
+              [address || "", customerId, carId, activeEmployeeId, totalAmount],
+              function (err) {
+                if (err) {
+                  console.error(err);
+                  return res.status(500).render("error", {
+                    message: "Ошибка сервера.",
+                    error: { status: 500, stack: err.stack },
+                  });
+                }
+
+                const orderId = this.lastID;
+                const detailPromises = [];
+
+                // Вставляем детали заказа в таблицу servis_order_details
+                if (Array.isArray(services) && services.length > 0) {
+                  for (const serviceId of services) {
+                    const quantity = quantities[serviceId] || 1;
+
+                    detailPromises.push(new Promise((resolve, reject) => {
+                      db.run(
+                        `INSERT INTO Servis_order_details 
+                            (quantity, Servises_servis_id, Servis_orders_order_id, subtotal) 
+                            VALUES (?, ?, ?, ?)`,
+                        [
+                          quantity,
+                          serviceId,
+                          orderId,
+                          quantity * (quantities[serviceId] || 1),
+                        ],
+                        function (err) {
+                          if (err) return reject(err);
+                          resolve();
+                        }
+                      );
+                    }));
+                  }
+                }
+
+                Promise.all(detailPromises)
+                  .then(() => {
+                    // Сохраняем информацию о платеже в таблице payments
+                    db.run(
+                      `INSERT INTO Payments 
+                           (payment_data, payment_amount, payment_metod, Servis_order_details_order_detail_id, Servis_orders_order_id) 
+                           VALUES (DATE('now'), ?, ?, ?, ?)`,
+                      [totalAmount, payment_method, null, orderId],
+                      function (err) {
+                        if (err) {
+                          console.error(err);
+                          return res.status(500).render("error", {
+                            message: "Ошибка сервера.",
+                            error: { status: 500, stack: err.stack },
+                          });
+                        }
+
+                        // Передача сообщения об успехе
+                        db.get("SELECT first_name, last_name FROM Customers WHERE customer_id = ?", [customerId], (err, userRow) => {
+                          if (err) {
+                            console.error(err);
+                            return res.status(500).render("error", {
+                              message: "Ошибка сервера.",
+                              error: { status: 500, stack: err.stack },
+                            });
+                          }
+                          const userName = userRow ? `${userRow.first_name} ${userRow.last_name}` : "Неизвестный пользователь";
+
+                          db.all("SELECT car_id, mark, model FROM Car WHERE Customers_customer_id = ?", [customerId], (err, cars) => {
+                            if (err) {
+                              console.error(err);
+                              return res.status(500).render("error", {
+                                message: "Ошибка сервера.",
+                                error: { status: 500, stack: err.stack },
+                              });
+                            }
+
+                            db.all("SELECT servis_id, servis_name, servis_price FROM Servises", [], (err, servicesList) => {
+                              if (err) {
+                                console.error(err);
+                                return res.status(500).render("error", {
+                                  message: "Ошибка сервера.",
+                                  error: { status: 500, stack: err.stack },
+                                });
+                              }
+
+                              res.render("9pd", {
+                                fio: userName,
+                                cars,
+                                services: servicesList,
+                                successMessage: "Ваш заказ успешно оформлен!",
+                              });
+                            });
+                          });
+                        });
+                      }
+                    );
+                  })
+                  .catch((err) => {
+                    console.error(err);
+                    res.status(500).render("error", {
+                      message: "Ошибка сервера при сохранении деталей заказа.",
+                      error: { status: 500, stack: err.stack },
+                    });
+                  });
+              }
+            );
+          })
+          .catch((err) => {
+            console.error(err);
+            res.status(500).render("error", {
+              message: "Ошибка сервера при расчете суммы заказа.",
+              error: { status: 500, stack: err.stack },
+            });
+          });
       }
-    }
-
-    // Вставляем заказ в таблицу servis_orders
-    const [orderResult] = await db.promise().query(
-      `INSERT INTO servis_orders 
-           (servis_data, order_status, adress, customers_customer_id, car_car_id, employes_employes_id, total_amount) 
-           VALUES (NOW(), 'active', ?, ?, ?, ?, ?)`,
-      [address || "", customerId, carId, activeEmployeeId, totalAmount]
     );
-
-    const orderId = orderResult.insertId;
-
-    // Вставляем детали заказа в таблицу servis_order_details
-    if (Array.isArray(services) && services.length > 0) {
-      for (const serviceId of services) {
-        const quantity = quantities[serviceId] || 1;
-
-        await db.promise().query(
-          `INSERT INTO servis_order_details 
-              (quantity, description, servises_servis_id, servis_orders_order_id, subtotal) 
-              VALUES (?, ?, ?, ?, ?)`,
-          [
-            quantity,
-            additionalRequirements || "",
-            serviceId,
-            orderId,
-            quantity * (quantities[serviceId] || 1),
-          ]
-        );
-      }
-    }
-
-    // Сохраняем информацию о платеже в таблице payments
-    await db.promise().query(
-      `INSERT INTO payments 
-           (payment_data, payment_amount, payment_metod, servis_orders_order_id) 
-           VALUES (NOW(), ?, ?, ?)`,
-      [totalAmount, payment_method, orderId]
-    );
-
-    // Передача сообщения об успехе
-    const [userRows] = await db
-      .promise()
-      .query("SELECT FIO FROM customers WHERE customer_id = ?", [customerId]);
-    const userName = userRows[0]?.FIO || "Неизвестный пользователь";
-
-    const [cars] = await db
-      .promise()
-      .query(
-        "SELECT car_id, mark, model FROM car WHERE customers_customer_id = ?",
-        [customerId]
-      );
-
-    const [servicesList] = await db
-      .promise()
-      .query("SELECT servis_id, servis_name, servis_price FROM servises");
-
-    res.render("9pd", {
-      fio: userName,
-      cars,
-      services: servicesList,
-      successMessage: "Ваш заказ успешно оформлен!",
-    });
   } catch (error) {
     console.error(error);
     res.render("error", {

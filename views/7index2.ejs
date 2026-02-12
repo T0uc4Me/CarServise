@@ -1,75 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=ABeeZee:ital@0;1&family=Krona+One&family=Unbounded:wght@200..900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/css/7style.css"> 
-    <link rel="stylesheet" href="/css/footer.css"> 
-    <title>Car Service</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=ABeeZee:ital@0;1&family=Krona+One&family=Unbounded:wght@200..900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/1style.css" />
+    <title>Car Service | Welcome Back</title>
 </head>
 <body>
-    <main class="main1">
-        <div class="main_title">
-            <div class="header">
-                <button class="lk"><a href="/account"><h2>Личный кабинет</h2></a></button>
-                <button class="exit"><a href="/"><h2>Выйти</h2></a></button>
-            </div>
-            <div class="full">
-                <div class="krona-one-regular">
-                    <img src="/img/svg/Logo.svg" alt="logo" class="Logo">
-                    <h1 class="Zagolovok">Car Service</h1> 
-                </div>
-                <h1 class="Podzagolovok">
-                    <p>Ваш автомобиль в<br>надежных руках!</p>
-                </h1>
-                <div class="text">
-                    <h2>Сервис по заправке и<br>обслуживанию автомобилей</h2>
-                    <ul>
-                        <li>удобно</li>
-                        <li>качественно</li>
-                        <li>быстро</li>
-                    </ul>
-                </div>
-                <button id="buy" ><a href="/zakaz"><h1>заказать</h1></a></button>
-            </div>
+    <header class="header container">
+        <div class="logo-container">
+            <img src="/img/svg/Logo.svg" alt="Car Service Logo" class="logo-img" />
+            <div class="logo-text">Car Service</div>
         </div>
-        <footer class="footer">
-            <div class="footer__container">
-                <div class="footer__wrapper">
-                    <img src="/img/svg/Logo.svg" alt="footerlogo" class="footerlogo" />
-                    <div class="ooo">
-                      <p>ООО "КИПУ"</p>
-                      <p>ИНН 9709075179</p>
-                      <p>ОГРН 1217700488763</p>
-                      <p>+7 (978) 978 79 78</p>
-                      <p>sewspot@bk.ru</p>
-                    </div>
-                    <div class="onas">
-                      <div class="z"></div>
-                      <a href="https://www.google.com">Заказчикам</a>
-                      <a href="https://www.google.com">Исполнителям</a>
-                      <a href="https://www.google.com">Тарифы</a>
-                      <a href="https://www.google.com">О нас</a>
-                    </div>
-                    <div class="sotsseti">
-                      <a href="https://vk.com"><img src="/img/svg/Vk.svg" alt="Vk" /></a>
-                      <a href="https://web.telegram.org"
-                        ><img src="/img/svg/Tg.svg" alt="Telegram"
-                      /></a>
-                      <a href="https://web.whatsapp.com/"
-                        ><img src="/img/svg/WhatsAap.svg" alt="WhatsAap"
-                      /></a>
-                      <a href="https://www.youtube.com/"
-                        ><img src="/img/svg/Ytube.svg" alt="YouTube"
-                      /></a>
-                  </div>
-              </div>
+        <div class="auth-buttons">
+            <a href="/account" class="btn btn-login">Личный кабинет</a>
+            <a href="/auth/logout" class="btn btn-register" style="background: transparent; border: 1px solid var(--glass-border);">Выйти</a>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="hero">
+            <div class="hero-content">
+                <h1 class="hero-title">Ваш автомобиль в <br /><span class="highlight">надежных руках!</span></h1>
+                <p class="hero-description">
+                    Сервис по заправке и обслуживанию автомобилей.
+                    Рады видеть вас снова!
+                </p>
+                
+                <div class="features-list">
+                    <div class="feature-item">Быстро</div>
+                    <div class="feature-item">Качественно</div>
+                    <div class="feature-item">Удобно</div>
+                </div>
+
+                <a href="/zakaz" id="buy" class="btn btn-cta" style="display:inline-block; text-align:center;">Заказать Услугу</a>
             </div>
-        </footer>
+        </section>
     </main>
 
+    <footer class="footer">
+        <div class="container footer-content">
+            <div class="footer-col">
+                <div class="logo-container" style="margin-bottom: 20px;">
+                    <img src="/img/svg/Logo.svg" alt="Logo" style="height: 30px;" />
+                     <span style="font-family: var(--font-display); margin-left:10px;">Car Service</span>
+                </div>
+                <p>ООО "КИПУ"</p>
+                <p>ИНН 9709075179</p>
+                <p>ОГРН 1217700488763</p>
+            </div>
+            
+            <div class="footer-col">
+                <h3>Контакты</h3>
+                <p>+7 (978) 978 79 78</p>
+                <p>sewspot@bk.ru</p>
+            </div>
+
+            <div class="footer-col">
+                <h3>Информация</h3>
+                <div class="footer-links">
+                    <a href="#">Заказчикам</a>
+                    <a href="#">Исполнителям</a>
+                    <a href="#">Тарифы</a>
+                    <a href="#">О нас</a>
+                </div>
+            </div>
+
+            <div class="footer-col">
+                <h3>Мы в соцсетях</h3>
+                <div class="social-links">
+                    <a href="https://vk.com" class="social-icon"><img src="/img/svg/Vk.svg" alt="Vk" /></a>
+                    <a href="https://web.telegram.org" class="social-icon"><img src="/img/svg/Tg.svg" alt="Telegram" /></a>
+                    <a href="https://web.whatsapp.com/" class="social-icon"><img src="/img/svg/WhatsAap.svg" alt="WhatsAap" /></a>
+                    <a href="https://www.youtube.com/" class="social-icon"><img src="/img/svg/Ytube.svg" alt="YouTube" /></a>
+                </div>
+            </div>
+        </div>
+    </footer>
 </body>
 </html>

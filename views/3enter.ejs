@@ -3,76 +3,169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=ABeeZee:ital@0;1&family=Krona+One&family=Unbounded:wght@200..900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/css/3style.css"> 
-    <link rel="stylesheet" href="/css/footer.css"> 
-    <title>Вход</title>
+    <link rel="stylesheet" href="/css/1style.css"> 
+    <title>Вход | Car Service</title>
+    <style>
+        .auth-container {
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .auth-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+
+        .auth-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+        
+        .auth-icon img {
+            width: 40px;
+            height: 40px;
+        }
+
+        .auth-title {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            color: var(--text-color);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid var(--glass-border);
+            border-radius: 50px;
+            color: #fff;
+            font-family: var(--font-main);
+            box-sizing: border-box; /* Important for padding */
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: rgba(255,255,255,0.15);
+        }
+
+        .auth-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .auth-options a:hover {
+            color: var(--accent-color);
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary-color), #5a52cc);
+            border: none;
+            padding: 15px;
+            border-radius: 50px;
+            color: white;
+            font-family: var(--font-main);
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(108, 99, 255, 0.4);
+        }
+
+        .error-msg {
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            color: #ff6b6b;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+    </style>
 </head>
 <body>
-  
-    <a href="/"><img src="/img/svg/Logo.svg" alt="logo" class="Logo"></a>
-    <div class="login-container">
-        <div class="icon">
-            <img src="/img/svg/door.svg" alt="Door">
-        </div>
-        <div class="login-box">
-            <h2>Вход</h2>
-            <% if (error) { %>
-                <div class="error" style="color: red; text-align: center; margin-bottom: 10px;">
-                    <%= error %>
-                </div>
-            <% } %>
-            <form action="/auth/login" method="POST" id="loginForm">
-            <h3 class="email">Введите эл.почту</h3>
-            <input type="email" name="email" required>
-            <h3 class="password">Введите пароль</h3>
-            <input type="password" name="password" required>
-            <div class="options">
-                <label><input type="checkbox"> запомнить меня</label>
-                <a href="/auth/reset-password">забыли пароль?</a>
+    <header class="header container">
+        <a href="/" class="logo-container">
+            <img src="/img/svg/Logo.svg" alt="Logo" class="logo-img" />
+            <div class="logo-text">Car Service</div>
+        </a>
+    </header>
+
+    <div class="container auth-container">
+        <div class="auth-card">
+            <div class="auth-icon">
+                <img src="/img/svg/door.svg" alt="Login">
             </div>
-            <button type="submit"><h3 class="enter">Войти</h3></button>
-          </form>
+            <h2 class="auth-title">Вход</h2>
+
+            <% if (error) { %>
+                <div class="error-msg"><%= error %></div>
+            <% } %>
+
+            <form action="/auth/login" method="POST">
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" name="email" class="form-input" required placeholder="name@example.com">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Пароль</label>
+                    <input type="password" name="password" class="form-input" required placeholder="••••••••">
+                </div>
+
+                <div class="auth-options">
+                    <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                        <input type="checkbox" style="accent-color: var(--primary-color);"> Запомнить
+                    </label>
+                    <a href="/auth/reset-password">Забыли пароль?</a>
+                </div>
+
+                <button type="submit" class="btn-submit">Войти</button>
+            </form>
+            
+            <div style="margin-top: 20px; font-size: 0.9rem; color: var(--text-muted);">
+                Нет аккаунта? <a href="/auth/reg" style="color: var(--accent-color);">Зарегистрироваться</a>
+            </div>
         </div>
     </div>
-  
-
-  <footer class="footer">
-      <div class="footer__container">
-          <div class="footer__wrapper">
-              <img src="/img/svg/Logo.svg" alt="footerlogo" class="footerlogo" />
-              <div class="ooo">
-                <p>ООО "КИПУ"</p>
-                <p>ИНН 9709075179</p>
-                <p>ОГРН 1217700488763</p>
-                <p>+7 (978) 978 79 78</p>
-                <p>sewspot@bk.ru</p>
-              </div>
-              <div class="onas">
-                <div class="z"></div>
-                <a href="https://www.google.com">Заказчикам</a>
-                <a href="https://www.google.com">Исполнителям</a>
-                <a href="https://www.google.com">Тарифы</a>
-                <a href="https://www.google.com">О нас</a>
-              </div>
-              <div class="sotsseti">
-                <a href="https://vk.com"><img src="/img/svg/Vk.svg" alt="Vk" /></a>
-                <a href="https://web.telegram.org"
-                  ><img src="/img/svg/Tg.svg" alt="Telegram"
-                /></a>
-                <a href="https://web.whatsapp.com/"
-                  ><img src="/img/svg/WhatsAap.svg" alt="WhatsAap"
-                /></a>
-                <a href="https://www.youtube.com/"
-                  ><img src="/img/svg/Ytube.svg" alt="YouTube"
-                /></a>
-            </div>
-        </div>
-      </div>
-  </footer>
-
-    <script src="a3.js"></script>
 </body>
 </html>

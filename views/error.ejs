@@ -2,7 +2,58 @@
 <html>
 <head>
     <title>Ошибка</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8d7da;
+            color: #721c24;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+        }
+        .error-container {
+            background-color: #f5c6cb;
+            border: 1px solid #dc3545;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+        }
+        h1 {
+            color: #dc3545;
+            margin-bottom: 20px;
+        }
+        p {
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        pre {
+            background-color: #e2e3e5;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            text-align: left;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
 </head>
 <body>
+    <div class="error-container">
+        <h1>Ошибка!</h1>
+        <p><%= message %></p>
+        <% if (error && error.stack) { %>
+            <h2>Детали ошибки:</h2>
+            <pre><%= error.stack %></pre>
+        <% } %>
+        <p><a href="javascript:history.back()">Вернуться назад</a></p>
+    </div>
 </body>
 </html>

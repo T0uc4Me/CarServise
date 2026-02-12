@@ -3,46 +3,261 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/css/4style.css" />
-    <title>Личный кабинет</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=ABeeZee:ital@0;1&family=Krona+One&family=Unbounded:wght@200..900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/1style.css" />
+    <title>Личный кабинет | Car Service</title>
+    <style>
+        /* Specific Dashboard Styles requiring no extra CSS file */
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 40px;
+            margin-top: 40px;
+            min-height: 80vh;
+        }
+
+        .sidebar {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 30px;
+            height: fit-content;
+            text-align: center;
+        }
+
+        .profile-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            margin-bottom: 20px;
+            padding: 10px;
+        }
+
+        .profile-name {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .profile-phone-box {
+            background: rgba(0,0,0,0.2);
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            font-family: monospace;
+            font-size: 1.1rem;
+            color: var(--text-muted);
+        }
+
+        .dashboard-main {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .section-title {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--glass-border);
+            padding-bottom: 10px;
+        }
+
+        .cars-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .car-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            padding: 20px;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .car-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255,255,255,0.08);
+        }
+
+        .car-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--accent-color);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #0f0e17;
+        }
+
+        .car-info strong {
+            display: block;
+            font-size: 1.1rem;
+        }
+
+        .car-info span {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .add-car-btn {
+            background: transparent;
+            border: 2px dashed var(--glass-border);
+            border-radius: 15px;
+            color: var(--text-muted);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            height: 100%;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .add-car-btn:hover {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+            background: rgba(255, 174, 82, 0.05);
+        }
+
+        .back-link {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        
+        .back-link:hover {
+            color: var(--text-color);
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
   </head>
   <body>
-    <div class="container__left">
-      <a href="/"><img src="../img/svg/acc_back.svg" alt="back" class="acc_back"></a>
-      <img src="../img/svg/acc_logo.svg" alt="profile" class="acc_logo" />
-      <div class="profile">
-        <h2><%= fio %></h2>
-        <div class="profile_box">
-          <input
-            type="text"
-            placeholder="номер"
-            id="phone"
-            value="<%= phone %>"
-            readonly
-          />
-        </div>
-      </div>
+    <!-- Back Link -->
+    <a href="/" class="back-link">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+        На главную
+    </a>
+
+    <div class="container dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <img src="/img/svg/acc_logo.svg" alt="Profile" class="profile-img" onerror="this.src='https://ui-avatars.com/api/?name=User&background=random'" />
+            <h2 class="profile-name"><%= fio %></h2>
+            
+            <div class="info-card">
+                <div class="info-label">Телефон</div>
+                <div class="info-value"><%= phone %></div>
+            </div>
+
+            <div class="info-card">
+                <div class="info-label">Email</div>
+                <div class="info-value"><%= email %></div>
+            </div>
+
+            <div class="info-card">
+                <div class="info-label">Дата регистрации</div>
+                <div class="info-value"><%= date %></div>
+            </div>
+
+            <div class="info-card highlight-card">
+                <div class="info-label">Общая стоимость заказов</div>
+                <div class="info-value"><%= cost %> ₽</div>
+            </div>
+            
+            <a href="/auth/logout" class="btn btn-login logout-btn">Выйти</a>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+            <section>
+                <h1 class="section-title">Ваши автомобили</h1>
+                <div class="cars-grid">
+                    <!-- Car Cards -->
+                    <% cars.forEach(car => { %>
+                    <div class="car-card">
+                        <div class="car-icon">🚗</div> <!-- Emoji or SVG -->
+                        <div class="car-info">
+                            <strong><%= car.mark %></strong>
+                            <span><%= car.model %></span>
+                        </div>
+                    </div>
+                    <% }); %>
+                    
+                    <!-- Add Car Button -->
+                    <form action="/car" method="GET" style="display: contents;">
+                        <button type="submit" class="add-car-btn">
+                            <span style="font-size: 2rem;">+</span>
+                            <span>Добавить авто</span>
+                        </button>
+                    </form>
+                </div>
+            </section>
+        </main>
     </div>
 
-    <div class="container__right">
-      <div class="header">
-        <button class="exit">
-          <a href="/"><h1>Выйти</h1></a>
-        </button>
-      </div>
+    <style>
+        /* Extra styles inline for quick adjustment, can move to 1style.css later */
+        .info-card {
+            background: rgba(0,0,0,0.2);
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            text-align: left;
+        }
 
+        .highlight-card {
+            background: rgba(255, 174, 82, 0.1);
+            border: 1px solid var(--accent-color);
+        }
 
-      <div class="cars">
-        <h2>Ваши автомобили</h2>
-        <div id="carList">
-          <% cars.forEach(car => { %>
-          <div><strong><%= car.mark %></strong> <%= car.model %></div>
-          <% }); %>
-        </div>
-        <form action="/car" method="GET">
-          <button type="submit">+ Добавить авто</button>
-        </form>
-      </div>
-    </div>
+        .info-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-family: monospace;
+            font-size: 1rem;
+            word-break: break-all;
+        }
+
+        .logout-btn {
+            width: 100%; 
+            margin-top: 20px;
+            box-sizing: border-box; /* Fixes overflow issue */
+            display: flex; /* Ensures text centering */
+            justify-content: center;
+        }
+    </style>
+
+    <!-- Scripts -->
+    <script src="/js/a1.js"></script>
   </body>
 </html>

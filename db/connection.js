@@ -1,26 +1,64 @@
-const mysql = require("mysql2");
+const sqlite3 = require('sqlite3').verbose();
+const path = require('path');
 
-const db = mysql.createConnection({
-  host: "94.250.252.36",
-  user: "car_service",
-  password: "car_service",
-  database: "car_service",
+const dbPath = path.resolve(__dirname, 'carservice.db');
+const db = new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE, (err) => {
+    if (err) {
+        console.error("Error opening database " + err.message);
+    } else {
+        console.log("Connected to the SQLite database for application use.");
+    }
 });
 
-db.connect((err) => {
-  if (err) {
-    console.error("Ошибка подключения к базе данных: ", err);
-    return;
-  }
-  console.log("Подключено к базе данных");
-});
+// Custom query method to handle SQLite callbacks consistently
+db.query = function(sql, params, callback) {
+    if (typeof params === 'function') {
+        callback = params;
+        params = [];
+    }
 
-db.query("ALTER TABLE employes MODIFY COLUMN password VARCHAR(255)", (err) => {
-  if (err) {
-    console.error("Ошибка при изменении размера поля password:", err);
-  } else {
-    console.log("Размер поля password успешно изменен");
-  }
+    const stmt = this.prepare(sql, (err) => {
+        if (err) {
+            return callback(err);
+        }
+
+        if (sql.toLowerCase().startsWith('select')) {
+            stmt.all(params, (err, rows) => {
+                stmt.finalize();
+                if (err) {
+                    return callback(err);
+                }
+                callback(null, rows);
+            });
+        } else {
+            stmt.run(params, function(err) {
+                stmt.finalize();
+                if (err) {
+                    return callback(err);
+                }
+                callback(null, { affectedRows: this.changes, insertId: this.lastID });
+            });
+        }
+    });
+};
+
+// Promisify db.query for async/await usage
+db.promise = () => ({
+    query: (sql, params) => {
+        return new Promise((resolve, reject) => {
+            db.query(sql, params, (err, results) => {
+                if (err) {
+                    return reject(err);
+                }
+                // For SELECT queries, return rows directly. For others, return results object.
+                if (sql.toLowerCase().startsWith('select')) {
+                    resolve([results]); // Wrap results in an array to match mysql2's [rows, fields] format
+                } else {
+                    resolve(results);
+                }
+            });
+        });
+    },
 });
 
 module.exports = db;

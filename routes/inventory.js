@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const db = require("../db/connection");
+const db = require("../db/database");
 
 router.post("/", async (req, res) => {
   try {
@@ -8,19 +8,22 @@ router.post("/", async (req, res) => {
     const employes_employes_id = req.session.userId; // Получаем ID сотрудника из сессии
 
     // Добавляем новый товар в инвентарь
-    await db
-      .promise()
-      .query(
-        "INSERT INTO inventory (inventory_name, quantity_in_stock, inventory_price, employes_employes_id) VALUES (?, ?, ?, ?)",
+    db.run(
+        "INSERT INTO Inventory (inventory_name, quantity_in_stock, inventory_price, Employes_employes_id) VALUES (?, ?, ?, ?)",
         [
           inventory_name,
           quantity_in_stock,
           inventory_price,
           employes_employes_id,
-        ]
+        ],
+        function (err) {
+          if (err) {
+            console.error(err);
+            return res.status(500).send("Ошибка сервера");
+          }
+          res.redirect("/admin");
+        }
       );
-
-    res.redirect("/admin");
   } catch (error) {
     console.error(error);
     res.status(500).send("Ошибка сервера");

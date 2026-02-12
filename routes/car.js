@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../db/connection'); // Подключение к базе данных
+const db = require('../db/database'); // Подключение к базе данных
 
 // Маршрут для добавления автомобиля
 router.post('/', async (req, res) => {
@@ -15,15 +15,20 @@ router.post('/', async (req, res) => {
 
         const customerId = req.session.userId; // Получаем ID клиента из сессии
         const query = `
-            INSERT INTO car (mark, model, year, gos_nomer, wincode, customers_customer_id)
+            INSERT INTO Car (mark, model, year, gos_nomer, wincode, Customers_customer_id)
             VALUES (?, ?, ?, ?, ?, ?)
         `;
 
         // Выполняем запрос в базу данных
-        await db.promise().query(query, [brand, model, year, registrationNumber, vin, customerId]);
-
-        req.session.success = 'Автомобиль успешно зарегистрирован!';
-        res.redirect('/car');
+        db.run(query, [brand, model, year, registrationNumber, vin, customerId], function(err) {
+            if (err) {
+                console.error('Ошибка при добавлении автомобиля:', err);
+                req.session.error = 'Произошла ошибка при регистрации автомобиля.';
+                return res.redirect('/car');
+            }
+            req.session.success = 'Автомобиль успешно зарегистрирован!';
+            res.redirect('/account');
+        });
     } catch (error) {
         console.error('Ошибка при добавлении автомобиля:', error);
         req.session.error = 'Произошла ошибка при регистрации автомобиля.';

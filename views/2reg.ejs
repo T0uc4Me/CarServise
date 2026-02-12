@@ -3,280 +3,176 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=ABeeZee:ital@0;1&family=Krona+One&family=Unbounded:wght@200..900&display=swap" rel="stylesheet">
-    <title>Регистрация</title>
+    <link rel="stylesheet" href="/css/1style.css"> 
+    <title>Регистрация | Car Service</title>
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=ABeeZee:ital@0;1&family=Krona+One&family=Unbounded:wght@200..900&display=swap');
-html {
-  box-sizing: border-box;
-}
-*,
-*::before,
-*::after {
-    box-sizing: inherit;
-}
-    body {
-      font-family: "Unbounded", sans-serif;
-      font-optical-sizing: auto;
-      font-weight: 500;
-      font-style: normal;
-      color: #fff;
-      margin: 0;
-      padding: 0;
-      background-image: url(/img/registration.png);
-      object-fit: cover;
-      width: 100%;
-      height: 100%;
-    }
-    button,
-    a {
-      cursor: pointer;
-      text-decoration: none;
-      color: #fff;
-    }
-    a:visited {
-      color: #fff;
-    }
-    .Logo {
-      margin: 2px 30px;
-      width: 130px;
-      height: 130px;
-    }
-    .container {
-      margin: 0 auto;
-      width: 1400px;
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      border-radius: 30px;
-      padding: 50px;
-      border-radius: 20px;
-      position: relative;
-      z-index: 1;
-    }
-    .container::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(30px);
-      border-radius: 20px;
-      z-index: -1;
-    }
-    
-    .h1,
-    .h2,
-    .registration {
-      text-align: center;
-    }
-    .h1 {
-      margin: 3px 0 -8px;
-      font-size: 40px;
-      font-weight: 600;
-      letter-spacing: 0.03em;
-    }
-    .h2 {
-      margin-left: -5px;
-      font-size: 24px;
-      font-weight: 300;
-      letter-spacing: 0.007em;
-      opacity: 0.5;
-    }
-    .registration {
-      margin-top: 10px;
-      margin-left: -8px;
-      color:#fff;
-    }
-    
-    .form-box {
-      background-color: #fff;
-      border-radius: 20px;
-      text-align: center;
-      padding: 20px;
-      color: black;
-    }
-    #registrationForm {
-      font-size: 16px;
-      margin: 37px 61px 0;
-      text-align: left;
-      letter-spacing: 0.05em;
-      color: black;
-    }
-    
-    form input[type="text"],
-    form input[type="email"],
-    form input[type="tel"],
-    form input[type="password"] {
-      font-size: 20px;
-      width: 398px;
-      height: 40px;
-      border-radius: 50px;
-      border: none;
-      background-color: #d9d9d9;
-      padding-left: 20px;
-    }
-    
-    label {
-      font-weight: 500;
-      font-size: 11px;
-      letter-spacing: -0.02em;
-      display: flex;
-      align-items: center;
-      text-indent: 6px;
-      padding: 10px 5px;
-      color: #44436f;
-    }
-    form input[type="checkbox"] {
-      width: 20px;
-      height: 20px;
-      border: 2px solid #676679;
-      border-radius: 5%;
-    }
-    
-    button {
-      font-family: "Unbounded", sans-serif;
-      font-weight: 600;
-      background-color: #44436f;
-      color: #fff;
-      padding: 7px 27px;
-      border-radius: 20px;
-      border: none;
-      cursor: pointer;
-      margin: 16px 45px 0px;
-    }
-    button,
-    a {
-      cursor: pointer;
-      text-decoration: none;
-      color: #fff;
-    }
-    a:visited {
-      color: #fff;
-    }
-    
-    .footer {
-      font-family: "ABeeZee", sans-serif;
-      font-weight: 400;
-      background-color: #44436f;
-      margin-top: 180px;
-      width: 100%;
-    }
-    .footer__wrapper {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .footerlogo {
-      width: 142px;
-      height: 142px;
-      margin-top: 15px;
-    }
-    .ooo {
-      margin: 28px -20px;
-      font-size: 12px;
-      color: #fff;
-      line-height: 7px;
-    }
-    .onas,
-    .ooo {
-      font-size: 12;
-      font-style: normal;
-      text-align: justify;
-    }
-    .onas {
-      margin: 80px 215px;
-      width: 390px;
-      font-size: 12px;
-      display: flex;
-      justify-content: space-between;
-      letter-spacing: 0.05em;
-    }
-    .sotsseti {
-      width: 311px;
-      margin-top: 16px;
-      margin-left: -102px;
-      align-items: center;
-      display: flex;
-      justify-content: space-between;
-    }
+        .auth-container {
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .auth-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+
+        .auth-title {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: var(--text-color);
+        }
+
+        .auth-subtitle {
+            font-size: 1rem;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-left: 10px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 20px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid var(--glass-border);
+            border-radius: 50px;
+            color: #fff;
+            font-family: var(--font-main);
+            box-sizing: border-box;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            background: rgba(255,255,255,0.15);
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: linear-gradient(135deg, var(--accent-color), #ff9017);
+            border: none;
+            padding: 15px;
+            border-radius: 50px;
+            color: #0f0e17;
+            font-family: var(--font-main);
+            font-weight: 800;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 20px;
+            text-transform: uppercase;
+        }
+        
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 174, 82, 0.4);
+        }
+
+        .error-msg {
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            color: #ff6b6b;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .success-msg {
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid rgba(0, 255, 0, 0.3);
+            color: #4ade80;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
     </style>
 </head>
 <body>
+    <header class="header container">
+        <a href="/" class="logo-container">
+            <img src="/img/svg/Logo.svg" alt="Logo" class="logo-img" />
+            <div class="logo-text">Car Service</div>
+        </a>
+    </header>
+
+    <div class="container auth-container">
+        <div class="auth-card">
+            <h2 class="auth-title">Регистрация</h2>
+            <p class="auth-subtitle">Создайте аккаунт и присоединяйтесь к нам!</p>
+
+            <% if (error) { %>
+                <div class="error-msg"><%= error %></div>
+            <% } %>
+
+            <% if (success) { %>
+                <div class="success-msg"><%= success %></div>
+            <% } %>
+
             <form action="/auth/reg" method="POST">
-              <a href="/"><img src="/img/svg/Logo.svg" alt="logo" class="Logo"></a>
-              <div class="container">
-                  <div class="left">
-                      <h1 class="h1">Регистрация</h1>
-                      <h2 class="h2">Добро пожаловать!</h2>
-                      <img src="/img/svg/2reg.svg" alt="registration" class="registration">
-                  </div>
-                  <div class="form-box">
-                      <% if (error) { %>
-                          <div class="error" style="color: red; text-align: center; margin-bottom: 10px;">
-                              <%= error %>
-                          </div>
-                      <% } %>
-                      <% if (success) { %>
-                          <div class="success" style="color: green; text-align: center; margin-bottom: 10px;">
-                              <%= success %>
-                          </div>
-                      <% } %>
-                      <h3>Введите ФИО</h3>
-                      <input type="text" name="fio" required>
-                      <h3>Введите эл.почту</h3>
-                      <input type="email" name="email" required>
-                      <h3>Номер телефона</h3>
-                      <input type="tel" name="phone" required>
-                      <h3>Введите пароль</h3>
-                      <input type="password" name="password" required>
-                      <h3>Повторите пароль</h3>
-                      <input type="password" name="confirmPassword" required>
-                      <label><input type="checkbox" required> Я даю согласие на обработку персональных данных</label>
-                      <button type="submit"><a href="4lk.html"><h2 class="button">Зарегистрироваться</h2></a></button>
-                  </div>
-              </div>
-          </form>
-        </div>
-    </div>
-    <footer class="footer">
-      <div class="footer__container">
-          <div class="footer__wrapper">
-              <img src="/img/svg/Logo.svg" alt="footerlogo" class="footerlogo" />
-              <div class="ooo">
-                <p>ООО "КИПУ"</p>
-                <p>ИНН 9709075179</p>
-                <p>ОГРН 1217700488763</p>
-                <p>+7 (978) 978 79 78</p>
-                <p>sewspot@bk.ru</p>
-              </div>
-              <div class="onas">
-                <div class="z"></div>
-                <a href="https://www.google.com">Заказчикам</a>
-                <a href="https://www.google.com">Исполнителям</a>
-                <a href="https://www.google.com">Тарифы</a>
-                <a href="https://www.google.com">О нас</a>
-              </div>
-              <div class="sotsseti">
-                <a href="https://vk.com"><img src="/img/svg/Vk.svg" alt="Vk" /></a>
-                <a href="https://web.telegram.org"
-                  ><img src="/img/svg/Tg.svg" alt="Telegram"
-                /></a>
-                <a href="https://web.whatsapp.com/"
-                  ><img src="/img/svg/WhatsAap.svg" alt="WhatsAap"
-                /></a>
-                <a href="https://www.youtube.com/"
-                  ><img src="/img/svg/Ytube.svg" alt="YouTube"
-                /></a>
+                <div class="form-group">
+                    <label class="form-label">ФИО</label>
+                    <input type="text" name="fio" class="form-input" required placeholder="Иванов Иван Иванович">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" name="email" class="form-input" required placeholder="name@example.com">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Телефон</label>
+                    <input type="tel" name="phone" class="form-input" required placeholder="+7 (999) 000-00-00">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Пароль</label>
+                    <input type="password" name="password" class="form-input" required placeholder="••••••••">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Повторите пароль</label>
+                    <input type="password" name="confirmPassword" class="form-input" required placeholder="••••••••">
+                </div>
+
+                <div style="font-size: 0.8rem; text-align: left; margin-top: 15px; color: var(--text-muted);">
+                    <label style="display: flex; gap: 10px; cursor: pointer;">
+                        <input type="checkbox" required style="accent-color: var(--accent-color); margin-top: 3px;">
+                        <span>Я даю согласие на обработку персональных данных</span>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn-submit">Зарегистрироваться</button>
+            </form>
+            
+            <div style="margin-top: 20px; font-size: 0.9rem; color: var(--text-muted);">
+                Уже есть аккаунт? <a href="/auth/login" style="color: var(--accent-color);">Войти</a>
             </div>
         </div>
-      </div>
-  </footer>
-
-    <script src="a2.js"></script>
+    </div>
 </body>
 </html>

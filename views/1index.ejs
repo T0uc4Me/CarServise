@@ -9,69 +9,83 @@
       href="https://fonts.googleapis.com/css2?family=ABeeZee:ital@0;1&family=Krona+One&family=Unbounded:wght@200..900&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="css/1style.css" />
-    <link rel="stylesheet" href="css/footer.css" />
-    <title>Car Service</title>
+    <link rel="stylesheet" href="/css/1style.css" />
+    <!-- Removed footer.css as it is integrated into 1style.css now for consistency -->
+    <title>Car Service | Premium Auto Care</title>
 </head>
 <body>
-    <main class="main1">
-      <div class="main_title">
-        <div class="header">
-          <button class="enter">
-            <a href="/auth/login"><h2>Войти</h2></a>
-          </button>
-          <button class="registration">
-            <a href="/auth/reg"><h2>Регистрация</h2></a>
-          </button>
+    <header class="header container">
+        <div class="logo-container">
+            <img src="/img/svg/Logo.svg" alt="Car Service Logo" class="logo-img" />
+            <div class="logo-text">Car Service</div>
         </div>
-        <div class="full">
-          <div class="krona-one-regular">
-            <img src="/img/svg/Logo.svg" alt="logo" class="Logo" />
-            <h1 class="Zagolovok">Car Service</h1>
-          </div>
-          <h1 class="Podzagolovok">
-            <p>Ваш автомобиль в<br />надежных руках!</p>
-          </h1>
-          <div class="text">
-            <h2>Сервис по заправке и<br />обслуживанию автомобилей</h2>
-            <ul>
-              <li>удобно</li>
-              <li>качественно</li>
-              <li>быстро</li>
-            </ul>
-          </div>
-          <button type="buy" id="buy"><h1>заказать</h1></button>
+        <div class="auth-buttons">
+            <a href="/auth/login" class="btn btn-login">Войти</a>
+            <a href="/auth/reg" class="btn btn-register">Регистрация</a>
         </div>
-      </div>
+    </header>
 
-      <footer class="footer">
-          <div class="footer__container">
-              <div class="footer__wrapper">
-                  <img src="/img/svg/Logo.svg" alt="footerlogo" class="footerlogo" />
-                  <div class="ooo">
-                    <p>ООО "КИПУ"</p>
-                    <p>ИНН 9709075179</p>
-                    <p>ОГРН 1217700488763</p>
-                    <p>+7 (978) 978 79 78</p>
-                    <p>sewspot@bk.ru</p>
-                  </div>
-                  <div class="onas">
-                    <div class="z"></div>
-                    <a href="https://www.google.com">Заказчикам</a>
-                    <a href="https://www.google.com">Исполнителям</a>
-                    <a href="https://www.google.com">Тарифы</a>
-                    <a href="https://www.google.com">О нас</a>
-                  </div>
-                  <div class="sotsseti">
-                    <a href="https://vk.com"><img src="/img/svg/Vk.svg" alt="Vk" /></a>
-                    <a href="https://web.telegram.org"><img src="/img/svg/Tg.svg" alt="Telegram" /></a>
-                    <a href="https://web.whatsapp.com/"><img src="/img/svg/WhatsAap.svg" alt="WhatsAap" /></a>
-                    <a href="https://www.youtube.com/"><img src="/img/svg/Ytube.svg" alt="YouTube" /></a>
-                  </div>
-              </div>
-          </div>
-      </footer>
+    <main class="container">
+        <section class="hero">
+            <div class="hero-content">
+                <h1 class="hero-title">Ваш автомобиль в <br /><span class="highlight">надежных руках!</span></h1>
+                <p class="hero-description">
+                    Профессиональный сервис по заправке и обслуживанию автомобилей.
+                    Мы заботимся о вашем комфорте и безопасности.
+                </p>
+                
+                <div class="features-list">
+                    <div class="feature-item">Быстро</div>
+                    <div class="feature-item">Качественно</div>
+                    <div class="feature-item">Удобно</div>
+                </div>
+
+                <button id="buy" class="btn btn-cta">Заказать Услугу</button>
+            </div>
+            <!-- Future: Add a hero image here if available, currently background is used -->
+        </section>
     </main>
-    <script src="a1.js"></script>
+
+    <footer class="footer">
+        <div class="container footer-content">
+            <div class="footer-col">
+                <div class="logo-container" style="margin-bottom: 20px;">
+                    <img src="/img/svg/Logo.svg" alt="Logo" style="height: 30px;" />
+                     <span style="font-family: var(--font-display); margin-left:10px;">Car Service</span>
+                </div>
+                <p>ООО "КИПУ"</p>
+                <p>ИНН 9709075179</p>
+                <p>ОГРН 1217700488763</p>
+            </div>
+            
+            <div class="footer-col">
+                <h3>Контакты</h3>
+                <p>+7 (978) 978 79 78</p>
+                <p>sewspot@bk.ru</p>
+            </div>
+
+            <div class="footer-col">
+                <h3>Информация</h3>
+                <div class="footer-links">
+                    <a href="#">Заказчикам</a>
+                    <a href="#">Исполнителям</a>
+                    <a href="#">Тарифы</a>
+                    <a href="#">О нас</a>
+                </div>
+            </div>
+
+            <div class="footer-col">
+                <h3>Мы в соцсетях</h3>
+                <div class="social-links">
+                    <a href="https://vk.com" class="social-icon"><img src="/img/svg/Vk.svg" alt="Vk" /></a>
+                    <a href="https://web.telegram.org" class="social-icon"><img src="/img/svg/Tg.svg" alt="Telegram" /></a>
+                    <a href="https://web.whatsapp.com/" class="social-icon"><img src="/img/svg/WhatsAap.svg" alt="WhatsAap" /></a>
+                    <a href="https://www.youtube.com/" class="social-icon"><img src="/img/svg/Ytube.svg" alt="YouTube" /></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/a1.js"></script>
 </body>
 </html>
