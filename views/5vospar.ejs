@@ -7,31 +7,37 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=ABeeZee:ital@0;1&family=Krona+One&family=Unbounded:wght@200..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/5style.css">
-    <link rel="stylesheet" href="/css/footer.css">
-    <title>Восстановление пароля</title>
+    <title>Восстановление пароля | Car Service</title>
 </head>
 <body>
-    <form action="/auth/reset-password" method="POST">
-    <a href="/"><img src="/img/svg/Logo.svg" alt="logo" class="Logo"></a>
-    <div class="container">
-        <% if (error) { %>
-            <div style="color: red;"><%= error %></div>
-        <% } %>
-    
-        <% if (success) { %>
-            <div style="color: green;"><%= success %></div>
-        <% } %>
-            <label for="new-password"><h3>Введите новый пароль</h3></label>
-            <input type="password" id="new-password" name="newPassword" required>
+    <header class="page-header">
+      <a href="/"><img src="/img/svg/Logo.svg" alt="logo" class="Logo"></a>
+    </header>
 
-            <label for="confirm-password"><h3>Повторите пароль</h3></label>
-            <input type="password" id="confirm-password" name="confirmPassword" required>
-            <div class="knopki">
-                <button type="button" id="back-button"><a href="3enter.html"><h2>Назад</h2></a></button>
-                <button type="submit" id="next-button"><a href="3enter.html"><h2>Далее</h2></a></button>
-            </div>
-        </form>
-    </div> 
+    <main class="container">
+      <h2>Восстановление пароля</h2>
+
+      <% if (error) { %>
+          <div class="feedback error"><%= error %></div>
+      <% } %>
+  
+      <% if (success) { %>
+          <div class="feedback success"><%= success %></div>
+      <% } %>
+
+      <form action="/auth/reset-password" method="POST">
+          <label for="new-password">Введите новый пароль</label>
+          <input type="password" id="new-password" name="newPassword" required>
+
+          <label for="confirm-password">Повторите пароль</label>
+          <input type="password" id="confirm-password" name="confirmPassword" required>
+
+          <div class="knopki">
+              <a href="/auth/login" class="ghost-button">Назад</a>
+              <button type="submit" id="next-button">Сохранить</button>
+          </div>
+      </form>
+    </main>
 
     <script src="a5.js"></script>
 </body>
