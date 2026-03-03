@@ -72,154 +72,235 @@
       </section>
       
       <button id="add-item-button" class="add-button">Добавить предмет</button>
+      <section class="admin-chat-section">
+        <h2>Активные тикеты</h2>
+        <div class="tickets-grid" id="ticketsGrid">
+            <div style="padding:16px; color: rgba(255,255,255,0.4); text-align:center; grid-column: 1/-1;">Загрузка активных сессий...</div>
+        </div>
+      </section>
     </main>
 
+    <!-- Контейнер для плавающих окон чата -->
+    <div class="admin-chat-windows-container" id="adminChatWindows"></div>
+
     <div id="add-item-popup" class="popup">
+      <!-- ... (popup content already recovered previously) ... -->
       <div class="popup-content">
         <div class="popup-content__header">
           <span class="close">&times;</span>
           <h2>Добавить предмет в инвентарь</h2>
         </div>
-
-        <form
-          class="popup__add-object"
-          id="add-item-form"
-          action="/inventory"
-          method="POST"
-        >
+        <form class="popup__add-object" id="add-item-form" action="/inventory" method="POST">
           <label for="inventory_name">Название:</label>
-          <input
-            type="text"
-            id="inventory_name"
-            name="inventory_name"
-            required
-          />
-
+          <input type="text" id="inventory_name" name="inventory_name" required />
           <label for="quantity_in_stock">Количество:</label>
-          <input
-            type="number"
-            id="quantity_in_stock"
-            name="quantity_in_stock"
-            required
-          />
-
+          <input type="number" id="quantity_in_stock" name="quantity_in_stock" required />
           <label for="inventory_price">Цена:</label>
-          <input
-            type="number"
-            id="inventory_price"
-            name="inventory_price"
-            required
-          />
-
-          <input
-            type="hidden"
-            name="employes_employes_id"
-            value="<%= userId %>"
-          />
-
+          <input type="number" id="inventory_price" name="inventory_price" required />
+          <input type="hidden" name="employes_employes_id" value="<%= userId %>" />
           <button type="submit">Добавить</button>
         </form>
       </div>
     </div>
+
     <script>
-      
+      // ===== EXISTING ADMIN SCRIPTS =====
       const deleteItemButtons = document.querySelectorAll(".delete-item-button");
 
-      fetch('/admin', { method: 'GET' })
-    .then(response => {
-      if (response.status === 403) {
-        alert("У вас нет доступа к этой странице.");
-        window.location.href = "/admin/login"; // Перенаправляем на страницу входа
-      }
-    })
-    .catch(error => {
-      console.error("Ошибка:", error); });
-deleteItemButtons.forEach(button => {
-  button.addEventListener("click", async event => {
-    const inventoryId = button.getAttribute("data-inventory-id");
-    const confirmDelete = confirm(
-      `Вы уверены, что хотите удалить предмет с ID: ${inventoryId}?`
-    );
-
-    if (confirmDelete) {
-      try {
-        const response = await fetch(`/admin/delete-item/${inventoryId}`, {
-          method: "DELETE",
-        });
-
-        if (response.ok) {
-          alert("Предмет успешно удалён.");
-          window.location.reload(); // Обновляем страницу
-        } else {
-          alert("Не удалось удалить предмет.");
-        }
-      } catch (error) {
-        console.error("Ошибка при удалении предмета:", error);
-      }
-    }
-  });
-});
-fetch('/admin', { method: 'GET' })
-    .then(response => {
-      if (response.status === 403) {
-        alert("У вас нет доступа к этой странице.");
-        window.location.href = "/admin/login"; // Перенаправляем на страницу входа
-      }
-    })
-    .catch(error => {
-      console.error("Ошибка:", error); });
-      // Получаем элементы
-      const popup = document.getElementById("add-item-popup");
-      const btn = document.getElementById("add-item-button");
-      const span = document.getElementsByClassName("close")[0];
-
-      // Открываем всплывающее окно при нажатии на кнопку
-      btn.onclick = function () {
-        popup.style.display = "block";
-      };
-
-      // Закрываем всплывающее окно при нажатии на "x"
-      span.onclick = function () {
-        popup.style.display = "none";
-      };
-
-      // Закрываем всплывающее окно при клике вне его
-      window.onclick = function (event) {
-        if (event.target == popup) {
-          popup.style.display = "none";
-        }
-      };
-
-      // Добавление логики кнопки "Закрыть"
-      const closeOrderButtons = document.querySelectorAll(
-        ".close-order-button"
-      );
-
-      closeOrderButtons.forEach(button => {
+      deleteItemButtons.forEach(button => {
         button.addEventListener("click", async event => {
-          const orderId = button.getAttribute("data-order-id");
-          const confirmClose = confirm(
-            `Вы уверены, что хотите закрыть заказ ID: ${orderId}?`
-          );
-
-          if (confirmClose) {
+          const inventoryId = button.getAttribute("data-inventory-id");
+          const confirmDelete = confirm(`Вы уверены, что хотите удалить предмет с ID: ${inventoryId}?`);
+          if (confirmDelete) {
             try {
-              const response = await fetch(`/admin/close-order/${orderId}`, {
-                method: "PUT",
-              });
-
-              if (response.ok) {
-                alert("Заказ успешно закрыт.");
-                window.location.reload(); // Обновляем страницу
-              } else {
-                alert("Не удалось закрыть заказ.");
-              }
-            } catch (error) {
-              console.error("Ошибка при закрытии заказа:", error);
-            }
+              const response = await fetch(`/admin/delete-item/${inventoryId}`, { method: "DELETE" });
+              if (response.ok) { alert("Предмет успешно удалён."); window.location.reload(); }
+              else alert("Не удалось удалить предмет.");
+            } catch (error) { console.error("Ошибка при удалении предмета:", error); }
           }
         });
       });
+
+      const popup = document.getElementById("add-item-popup");
+      const btn   = document.getElementById("add-item-button");
+      const span  = document.getElementsByClassName("close")[0];
+      btn.onclick  = () => { popup.style.display = "block"; };
+      span.onclick = () => { popup.style.display = "none"; };
+      window.onclick = event => { if (event.target == popup) popup.style.display = "none"; };
+
+      const closeOrderButtons = document.querySelectorAll(".close-order-button");
+      closeOrderButtons.forEach(button => {
+        button.addEventListener("click", async event => {
+          const orderId = button.getAttribute("data-order-id");
+          const confirmClose = confirm(`Вы уверены, что хотите закрыть заказ ID: ${orderId}?`);
+          if (confirmClose) {
+            try {
+              const response = await fetch(`/admin/close-order/${orderId}`, { method: "PUT" });
+              if (response.ok) { alert("Заказ успешно закрыт."); window.location.reload(); }
+              else alert("Не удалось закрыть заказ.");
+            } catch (error) { console.error("Ошибка при закрытии заказа:", error); }
+          }
+        });
+      });
+
+      // ===== ADMIN TICKET SYSTEM SCRIPTS =====
+      (function() {
+        const ticketsGrid = document.getElementById('ticketsGrid');
+        const windowsRoot = document.getElementById('adminChatWindows');
+        const openTickets = new Map(); // customerId -> { el, lastId }
+
+        function escapeHtml(t) { return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+        function formatTime(dt) { return new Date(dt).toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit'}); }
+
+        function loadTickets() {
+            fetch('/chat/admin/users')
+                .then(r => r.json())
+                .then(users => {
+                    if (!Array.isArray(users) || users.length === 0) {
+                        ticketsGrid.innerHTML = '<div style="padding:16px; color:rgba(255,255,255,0.4); text-align:center; grid-column:1/-1;">Нет активных диалогов</div>';
+                        return;
+                    }
+                    ticketsGrid.innerHTML = '';
+                    users.forEach((u, index) => {
+                        const btn = document.createElement('div');
+                        btn.className = 'ticket-card';
+                        if (u.unread_count > 0) btn.classList.add('has-unread');
+                        btn.innerHTML = `
+                            <div class="ticket-status"></div>
+                            <div class="ticket-title">Тикет #${index + 1}</div>
+                            <div class="ticket-user">${escapeHtml(u.first_name + ' ' + u.last_name)}</div>
+                            <div class="ticket-preview">${escapeHtml(u.last_message || '...')}</div>
+                            ${u.unread_count > 0 ? `<div class="ticket-unread">${u.unread_count}</div>` : ''}
+                            <button class="ticket-delete-btn" data-cid="${u.customer_id}" title="Удалить тикет">🗑️</button>
+                        `;
+                        btn.onclick = (e) => {
+                            if (e.target.classList.contains('ticket-delete-btn')) {
+                                deleteTicket(u.customer_id);
+                            } else {
+                                openTicketWindow(u);
+                            }
+                        };
+                        ticketsGrid.appendChild(btn);
+                    });
+                });
+        }
+
+        function openTicketWindow(user) {
+            const cid = user.customer_id;
+            if (openTickets.has(cid)) {
+                openTickets.get(cid).el.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                return;
+            }
+
+            const win = document.createElement('div');
+            win.className = 'admin-floating-chat';
+            win.innerHTML = `
+                <div class="chat-win-header">
+                    <div style="flex:1; min-width:0;">
+                        <div class="chat-win-title">Тикет: ${escapeHtml(user.first_name + ' ' + user.last_name)}</div>
+                        <div class="chat-win-subtitle">${user.phone || ''} | ${user.email || ''}</div>
+                    </div>
+                    <button class="chat-win-close" title="Закрыть">×</button>
+                </div>
+                <div class="chat-win-messages"></div>
+                <div class="chat-win-input-area">
+                    <input type="text" placeholder="Ответить..." />
+                    <button>➤</button>
+                </div>
+            `;
+
+            windowsRoot.appendChild(win);
+            const msgBox = win.querySelector('.chat-win-messages');
+            const input  = win.querySelector('input');
+            const btn    = win.querySelector('button');
+            const close  = win.querySelector('.chat-win-close');
+
+            const ticketData = { el: win, lastId: 0, msgBox };
+            openTickets.set(cid, ticketData);
+
+            close.onclick = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                win.remove();
+                openTickets.delete(cid);
+            };
+
+            btn.onclick = () => sendMessage(cid, input, ticketData);
+            input.onkeydown = (e) => { if(e.key === 'Enter') sendMessage(cid, input, ticketData); };
+
+            loadMessages(cid, ticketData);
+        }
+
+        function appendMsg(ticket, msg) {
+            const wrap = document.createElement('div');
+            wrap.className = 'chat-message ' + (msg.sender === 'admin' ? 'user' : 'admin');
+            wrap.innerHTML = `<div>${escapeHtml(msg.message)}</div><div class="chat-message-time">${formatTime(msg.created_at || new Date())}</div>`;
+            ticket.msgBox.appendChild(wrap);
+            ticket.msgBox.scrollTop = ticket.msgBox.scrollHeight;
+            if (msg.id > ticket.lastId) ticket.lastId = msg.id;
+        }
+
+        function loadMessages(cid, ticket) {
+            fetch(`/chat/admin/messages/${cid}?since=0`)
+                .then(r => r.json())
+                .then(msgs => {
+                    if (Array.isArray(msgs)) msgs.forEach(m => appendMsg(ticket, m));
+                });
+        }
+
+        function pollAll() {
+            openTickets.forEach((ticket, cid) => {
+                fetch(`/chat/admin/messages/${cid}?since=${ticket.lastId}`)
+                    .then(r => r.json())
+                    .then(msgs => {
+                        if (Array.isArray(msgs)) {
+                            const newMsgs = msgs.filter(m => m.id > ticket.lastId);
+                            if (newMsgs.length > 0) {
+                                newMsgs.forEach(m => appendMsg(ticket, m));
+                                loadTickets(); // Refresh list to update unread
+                            }
+                        }
+                    });
+            });
+        }
+
+        function sendMessage(cid, inputEl, ticket) {
+            const text = inputEl.value.trim();
+            if (!text) return;
+            inputEl.value = '';
+            fetch(`/chat/admin/send/${cid}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: text })
+            })
+            .then(r => r.json())
+            .then(msg => {
+                if (msg.id) appendMsg(ticket, { ...msg, created_at: new Date().toISOString() });
+            });
+        }
+
+        function deleteTicket(cid) {
+            if (!confirm('Вы уверены, что хотите удалить этот тикет и всю историю переписки?')) return;
+            fetch(`/chat/admin/delete/${cid}`, { method: 'DELETE' })
+                .then(r => r.ok ? r.json() : {error: 'error'})
+                .then(res => {
+                    if (res.ok) {
+                        if (openTickets.has(cid)) {
+                            openTickets.get(cid).el.remove();
+                            openTickets.delete(cid);
+                        }
+                        loadTickets();
+                    } else {
+                        alert('Ошибка при удалении тикета');
+                    }
+                });
+        }
+
+        loadTickets();
+        setInterval(loadTickets, 10000);
+        setInterval(pollAll, 3000);
+      })();
     </script>
   </body>
 </html>
+

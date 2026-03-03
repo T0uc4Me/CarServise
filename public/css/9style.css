@@ -65,6 +65,12 @@ textarea {
   margin-bottom: 15px;
   border-radius: 5px;
   border: none;
+  color: #000; /* Ensure text is visible on gray background */
+}
+
+select option {
+  background-color: #fff;
+  color: #292643;
 }
 button {
   font-family: "Unbounded", sans-serif;
@@ -189,20 +195,31 @@ button:hover {
 }
 
 .quantity-input {
-  width: 60px;
+  width: 120px; /* Increased to fit ruble amounts */
   text-align: center;
-  padding: 5px;
+  padding: 8px;
   border: 1px solid #4caf50;
-  border-radius: 4px;
+  border-radius: 6px;
   background-color: #2d2d4d;
   color: white;
+  font-size: 1.1rem;
 }
 
 .quantity-unit {
   display: block;
   text-align: center;
   color: #bbabb8;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.liters-calc {
+  display: block;
+  text-align: center;
+  color: #4caf50;
   font-size: 12px;
+  margin-top: 2px;
+  font-style: italic;
 }
 
 /* Показываем элементы управления количеством только для выбранных услуг */

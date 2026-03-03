@@ -12,8 +12,11 @@ app.use(
   session({
     secret: "your-secret-key", // Замените на собственный секретный ключ
     resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false }, // Установите true, если используете HTTPS
+    saveUninitialized: false, // Don't create session until something is stored
+    cookie: { 
+      secure: false, 
+      maxAge: 48 * 60 * 60 * 1000 // 48 hours in milliseconds
+    },
   })
 );
 app.use((req, res, next) => {
@@ -67,10 +70,21 @@ const orderDetailsRouter = require("./routes/orders");
 app.use("/order-details", orderDetailsRouter);
 
 app.get("/", (req, res) => {
-  res.render("1index"); // Отображаем 1index.ejs
+  const isLoggedIn = !!req.session.customerId;
+  let userName = "";
+  if (isLoggedIn) {
+    // Получаем имя пользователя для хедера
+    const db = require("./db/database");
+    db.get("SELECT first_name FROM Customers WHERE customer_id = ?", [req.session.customerId], (err, user) => {
+      userName = user ? user.first_name : "";
+      res.render("1index", { isLoggedIn, userName });
+    });
+  } else {
+    res.render("1index", { isLoggedIn, userName });
+  }
 });
 app.get("/home2", (req, res) => {
-  res.render("7index2"); // Отображаем 1index.ejs
+  res.redirect("/"); // Единая главная страница
 });
 
 const carRoutes = require("./routes/car");
@@ -78,6 +92,9 @@ app.use("/car", carRoutes);
 
 const accountRouter = require("./routes/account");
 app.use("/account", accountRouter);
+
+const chatRouter = require("./routes/chat");
+app.use("/chat", chatRouter);
 
 const path = require("path");
 app.set("views", path.join(__dirname, "views"));

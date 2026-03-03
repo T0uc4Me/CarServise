@@ -19,33 +19,36 @@
   <main class="big_container">
     <div class="container">
       <div class="registration__auto">
-        <h2 class="h2">Регистрация автомобиля</h2>
+        <h2 class="h2"><%= (typeof car !== 'undefined' && car) ? 'Редактирование' : 'Регистрация' %> автомобиля</h2>
 
-        <% if (error) { %>
+        <% if (locals.error) { %>
           <div class="feedback error"><%= error %></div>
         <% } %>
 
-        <% if (success) { %>
+        <% if (locals.success) { %>
           <div class="feedback success"><%= success %></div>
         <% } %>
 
-        <form action="/car" method="POST">
+        <form action="<%= (typeof car !== 'undefined' && car) ? '/car/edit/' + car.car_id : '/car' %>" method="POST">
           <p class="p">Марка</p>
-          <input type="text" id="brand" name="brand" required placeholder="Например, Toyota">
+          <input type="text" id="brand" name="brand" required placeholder="Например, Toyota" value="<%= (typeof car !== 'undefined' && car) ? car.mark : '' %>">
 
           <p class="p">Модель</p>
-          <input type="text" id="model" name="model" required placeholder="Например, Camry">
+          <input type="text" id="model" name="model" required placeholder="Например, Camry" value="<%= (typeof car !== 'undefined' && car) ? car.model : '' %>">
 
           <p class="p">Год выпуска</p>
-          <input type="number" id="year" name="year" required min="1900" max="2099" placeholder="Например, 2020">
+          <input type="number" id="year" name="year" required min="1900" max="2099" placeholder="Например, 2020" value="<%= (typeof car !== 'undefined' && car) ? car.year : '' %>">
 
           <p class="p">Гос номер</p>
-          <input type="text" id="registrationNumber" name="registrationNumber" required placeholder="А123БВ 82">
+          <input type="text" id="registrationNumber" name="registrationNumber" required placeholder="А123БВ 82" value="<%= (typeof car !== 'undefined' && car) ? car.gos_nomer : '' %>">
 
           <p class="p">VIN номер</p>
-          <input type="text" id="vin" name="vin" required placeholder="XTA00000000000000">
+          <input type="text" id="vin" name="vin" required placeholder="XTA00000000000000" value="<%= (typeof car !== 'undefined' && car) ? car.wincode : '' %>">
 
-          <button type="submit" class="reg">Зарегистрировать</button>
+          <button type="submit" class="reg"><%= (typeof car !== 'undefined' && car) ? 'Сохранить изменения' : 'Зарегистрировать' %></button>
+          <% if (typeof car !== 'undefined' && car) { %>
+            <a href="/account" class="btn btn-login" style="margin-top: 10px; width: 100%; text-align: center; background: transparent; border: 1px solid var(--glass-border);">Отмена</a>
+          <% } %>
         </form>
       </div>
     </div>

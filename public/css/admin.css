@@ -326,3 +326,214 @@ body {
 .add-button:hover {
   transform: translateY(-1px);
 }
+/* ===== ADMIN TICKET SYSTEM STYLES ===== */
+.admin-chat-section {
+    margin-top: 40px;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tickets-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.ticket-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 20px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.ticket-card:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-3px);
+    border-color: var(--accent-color, #ffae52);
+}
+
+.ticket-card.has-unread {
+    border-color: #e74c3c;
+    box-shadow: 0 0 15px rgba(231, 76, 60, 0.2);
+}
+
+.ticket-status {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #2ecc71;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+}
+
+.ticket-title {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.ticket-user {
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+.ticket-preview {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ticket-unread {
+    background: #e74c3c;
+    color: white;
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    border-radius: 10px;
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+}
+
+/* FLOATING WINDOWS */
+.admin-chat-windows-container {
+    position: fixed;
+    bottom: 0;
+    right: 20px;
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: flex-end;
+    gap: 15px;
+    z-index: 2000;
+    pointer-events: none;
+}
+
+.admin-floating-chat {
+    width: 320px;
+    height: 450px;
+    background: #1a1926;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 15px 15px 0 0;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.5);
+    pointer-events: auto;
+    backdrop-filter: blur(10px);
+}
+
+.chat-win-header {
+    background: #2a2743;
+    padding: 12px 15px;
+    border-radius: 14px 14px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.chat-win-title {
+    font-size: 0.95rem;
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.chat-win-subtitle {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.chat-win-close {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1.5rem;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0 5px;
+    opacity: 0.6;
+}
+
+.chat-win-close:hover { opacity: 1; }
+
+.chat-win-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.chat-win-input-area {
+    padding: 10px;
+    display: flex;
+    gap: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.chat-win-input-area input {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 8px 15px;
+    color: #fff;
+    outline: none;
+}
+
+.chat-win-input-area button {
+    background: var(--accent-color, #ffae52);
+    border: none;
+    color: #000;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* MESSAGE BUBBLES */
+.chat-message {
+    max-width: 85%;
+    padding: 10px 14px;
+    border-radius: 15px;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    position: relative;
+}
+
+.chat-message.admin { /* From User */
+    align-self: flex-start;
+    background: rgba(255, 255, 255, 0.1);
+    border-bottom-left-radius: 2px;
+}
+
+.chat-message.user { /* From Admin */
+    align-self: flex-end;
+    background: #ffae52;
+    color: #000;
+    border-bottom-right-radius: 2px;
+}
+
+.chat-message-time {
+    font-size: 0.7rem;
+    margin-top: 4px;
+    opacity: 0.6;
+    text-align: right;
+}

@@ -107,7 +107,7 @@ router.post("/login", async (req, res) => {
       }
 
       // Установка сессии
-      req.session.userId = user.customer_id;
+      req.session.customerId = user.customer_id;
       req.session.email = user.email;
 
       res.redirect("/home2");
@@ -141,7 +141,7 @@ router.post("/reset-password", async (req, res) => {
 
     // Обновление пароля в базе данных
     const query = "UPDATE Customers SET password = ? WHERE customer_id = ?";
-    db.run(query, [hashedPassword, req.session.userId], function(err) {
+    db.run(query, [hashedPassword, req.session.customerId], function(err) {
       if (err) {
         console.error("Ошибка обновления пароля:", err);
         req.session.error = "Произошла ошибка, попробуйте снова.";
@@ -155,6 +155,14 @@ router.post("/reset-password", async (req, res) => {
     req.session.error = "Произошла ошибка, попробуйте снова.";
     res.redirect("/auth/reset-password");
   }
+});
+
+// Выход из системы
+router.get("/logout", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) console.error("Ошибка при выходе:", err);
+    res.redirect("/");
+  });
 });
 
 module.exports = router;

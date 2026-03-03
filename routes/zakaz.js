@@ -5,7 +5,7 @@ const db = require("../db/database");
 // GET запрос на страницу заказа
 router.get("/", async (req, res) => {
   try {
-    const userId = req.session.userId; // Получаем ID пользователя из сессии
+    const userId = req.session.customerId; // Получаем ID пользователя из сессии
     if (!userId) {
       return res.redirect("/auth/login"); // Если пользователь не авторизован, перенаправляем на страницу входа
     }
@@ -64,7 +64,7 @@ router.get("/", async (req, res) => {
 // POST запрос на создание заказа
 router.post("/", async (req, res) => {
   try {
-    const customerId = req.session.userId;
+    const customerId = req.session.customerId;
     if (!customerId) {
       return res
         .status(401)
@@ -99,12 +99,8 @@ router.post("/", async (req, res) => {
           });
         }
 
-        if (employeeRows.length === 0) {
-          return res.status(500).render("error", {
-            message: "Нет доступных сотрудников для обработки заказа.",
-          });
-        }
-        const activeEmployeeId = employeeRows[0].employes_id;
+        // Если сотрудников нет, используем дефолтный ID 1 (затычка)
+        const activeEmployeeId = employeeRows.length > 0 ? employeeRows[0].employes_id : 1;
 
         let totalAmount = 0;
         const servicePromises = [];
@@ -112,20 +108,31 @@ router.post("/", async (req, res) => {
         if (Array.isArray(services) && services.length > 0) {
           for (const serviceId of services) {
             servicePromises.push(new Promise((resolve, reject) => {
-              db.get(`SELECT servis_price FROM Servises WHERE servis_id = ?`, [serviceId], (err, serviceRow) => {
+              db.get(`SELECT servis_price, servis_name, servis_type FROM Servises WHERE servis_id = ?`, [serviceId], (err, serviceRow) => {
                 if (err) return reject(err);
-                if (!serviceRow) return resolve(0);
+                if (!serviceRow) return resolve({ price: 0, id: serviceId });
+                
                 const servicePrice = parseFloat(serviceRow.servis_price) || 0;
-                const quantity = quantities[serviceId] || 1;
-                resolve(servicePrice * quantity);
+                const isFuel = serviceRow.servis_type === 'Заправка' || serviceRow.servis_name.toLowerCase().includes('заправка');
+                
+                // Для топлива quantity - это сумма в рублях, которую мы получили с фронтенда
+                // Для остальных услуг quantity - это количество штук
+                const quantity = parseFloat(quantities[serviceId]) || 1;
+                
+                if (isFuel) {
+                  // Для топлива totalAmount += quantity (потому что в инпуте рубли)
+                  resolve({ price: servicePrice, id: serviceId, lineTotal: quantity, actualQuantity: quantity / servicePrice, isFuel: true });
+                } else {
+                  resolve({ price: servicePrice, id: serviceId, lineTotal: servicePrice * quantity, actualQuantity: quantity, isFuel: false });
+                }
               });
             }));
           }
         }
 
         Promise.all(servicePromises)
-          .then((amounts) => {
-            totalAmount = amounts.reduce((sum, current) => sum + current, 0);
+          .then((serviceResults) => {
+            totalAmount = serviceResults.reduce((sum, res) => sum + res.lineTotal, 0);
 
             // Вставляем заказ в таблицу servis_orders
             db.run(
@@ -146,28 +153,24 @@ router.post("/", async (req, res) => {
                 const detailPromises = [];
 
                 // Вставляем детали заказа в таблицу servis_order_details
-                if (Array.isArray(services) && services.length > 0) {
-                  for (const serviceId of services) {
-                    const quantity = quantities[serviceId] || 1;
-
-                    detailPromises.push(new Promise((resolve, reject) => {
-                      db.run(
-                        `INSERT INTO Servis_order_details 
-                            (quantity, Servises_servis_id, Servis_orders_order_id, subtotal) 
-                            VALUES (?, ?, ?, ?)`,
-                        [
-                          quantity,
-                          serviceId,
-                          orderId,
-                          quantity * (quantities[serviceId] || 1),
-                        ],
-                        function (err) {
-                          if (err) return reject(err);
-                          resolve();
-                        }
-                      );
-                    }));
-                  }
+                for (const res of serviceResults) {
+                  detailPromises.push(new Promise((resolve, reject) => {
+                    db.run(
+                      `INSERT INTO Servis_order_details 
+                          (quantity, Servises_servis_id, Servis_orders_order_id, subtotal) 
+                          VALUES (?, ?, ?, ?)`,
+                      [
+                        res.actualQuantity, // Для топлива это литры, для остального - штуки
+                        res.id,
+                        orderId,
+                        res.lineTotal,
+                      ],
+                      function (err) {
+                        if (err) return reject(err);
+                        resolve();
+                      }
+                    );
+                  }));
                 }
 
                 Promise.all(detailPromises)

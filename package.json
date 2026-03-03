@@ -1,15 +1,15 @@
 {
-  "name": "project",
+  "name": "carservice",
   "version": "1.0.0",
-  "description": "",
+  "description": "Car Service Web App",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "test": "node test/smoke.test.js",
+    "lint": "eslint index.js routes/"
   },
-  "keywords": [
-    "notion"
-  ],
+  "keywords": ["carservice"],
   "author": "Islyamov Eridan <eridan.islyamov@gmail.com>",
   "license": "ISC",
   "dependencies": {
@@ -21,5 +21,9 @@
     "express-session": "^1.18.1",
     "sqlite3": "^5.1.7",
     "nodemon": "^3.1.7"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0"
   }
 }
+

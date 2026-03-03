@@ -1,16 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=ABeeZee:ital@0;1&family=Krona+One&family=Unbounded:wght@200..900&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=ABeeZee:ital@0;1&family=Krona+One&family=Unbounded:wght@200..900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="/css/1style.css" />
-    <!-- Removed footer.css as it is integrated into 1style.css now for consistency -->
     <title>Car Service | Premium Auto Care</title>
 </head>
 <body>
@@ -20,8 +16,13 @@
             <div class="logo-text">Car Service</div>
         </div>
         <div class="auth-buttons">
-            <a href="/auth/login" class="btn btn-login">Войти</a>
-            <a href="/auth/reg" class="btn btn-register">Регистрация</a>
+            <% if (isLoggedIn) { %>
+                <a href="/account" class="btn btn-login">Личный кабинет</a>
+                <a href="/auth/logout" class="btn btn-register" style="background:transparent;border:1px solid var(--glass-border);">Выйти</a>
+            <% } else { %>
+                <a href="/auth/login" class="btn btn-login">Войти</a>
+                <a href="/auth/reg" class="btn btn-register">Регистрация</a>
+            <% } %>
         </div>
     </header>
 
@@ -33,37 +34,129 @@
                     Профессиональный сервис по заправке и обслуживанию автомобилей.
                     Мы заботимся о вашем комфорте и безопасности.
                 </p>
-                
                 <div class="features-list">
                     <div class="feature-item">Быстро</div>
                     <div class="feature-item">Качественно</div>
                     <div class="feature-item">Удобно</div>
                 </div>
-
-                <button id="buy" class="btn btn-cta">Заказать Услугу</button>
+                <% if (isLoggedIn) { %>
+                    <a href="/zakaz" class="btn btn-cta" style="display:inline-flex;">Заказать Услугу</a>
+                <% } else { %>
+                    <button id="buy" class="btn btn-cta">Заказать Услугу</button>
+                <% } %>
             </div>
-            <!-- Future: Add a hero image here if available, currently background is used -->
+        </section>
+
+        <!-- КАРУСЕЛЬ УСЛУГ -->
+        <section class="carousel-section">
+            <h2 class="carousel-title">Наши <span class="highlight">услуги</span></h2>
+            <p class="carousel-subtitle">Полный спектр автомобильных услуг для вашего удобства</p>
+
+            <div class="carousel-wrapper">
+                <button class="carousel-btn carousel-btn-prev" id="carouselPrev" aria-label="Предыдущий">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                </button>
+                <div class="carousel-track-container">
+                    <div class="carousel-track" id="carouselTrack">
+                        <div class="carousel-card">
+                            <div class="carousel-card-image">
+                                <img src="/img/fuel.png" alt="Заправка топлива">
+                            </div>
+                            <h3 class="carousel-card-title">Заправка топлива</h3>
+                            <p class="carousel-card-desc">Бензин, дизель, газ. Быстрая заправка прямо за рулём — без очередей.</p>
+                            <div class="carousel-card-price">от 3 ₽/л</div>
+                        </div>
+                        <div class="carousel-card">
+                            <div class="carousel-card-image">
+                                <img src="/img/maintenance.png" alt="Техническое обслуживание">
+                            </div>
+                            <h3 class="carousel-card-title">Техническое обслуживание</h3>
+                            <p class="carousel-card-desc">Замена масла, фильтров, свечей и диагностика всех систем автомобиля.</p>
+                            <div class="carousel-card-price">от 1 500 ₽</div>
+                        </div>
+                        <div class="carousel-card">
+                            <div class="carousel-card-image">
+                                <img src="/img/tires.png" alt="Шиномонтаж">
+                            </div>
+                            <h3 class="carousel-card-title">Шиномонтаж</h3>
+                            <p class="carousel-card-desc">Смена, балансировка и ремонт шин. Сезонное хранение колёс.</p>
+                            <div class="carousel-card-price">от 800 ₽</div>
+                        </div>
+                        <div class="carousel-card">
+                            <div class="carousel-card-image">
+                                <img src="/img/detailing.jpg" alt="Детейлинг салона">
+                            </div>
+                            <h3 class="carousel-card-title">Детейлинг салона</h3>
+                            <p class="carousel-card-desc">Профессиональная химчистка, полировка и защита интерьера вашего автомобиля.</p>
+                            <div class="carousel-card-price">от 1 500 ₽</div>
+                        </div>
+                        <div class="carousel-card">
+                            <div class="carousel-card-image">
+                                <img src="/img/battery.jpg" alt="Замена аккумулятора">
+                            </div>
+                            <h3 class="carousel-card-title">Замена аккумулятора</h3>
+                            <p class="carousel-card-desc">Диагностика и замена аккумуляторов всех марок. Зарядка и обслуживание.</p>
+                            <div class="carousel-card-price">от 500 ₽</div>
+                        </div>
+                        <div class="carousel-card">
+                            <div class="carousel-card-image">
+                                <img src="/img/diagnostics.jpg" alt="Компьютерная диагностика">
+                            </div>
+                            <h3 class="carousel-card-title">Компьютерная диагностика</h3>
+                            <p class="carousel-card-desc">Сканирование ошибок, анализ датчиков и ЭБУ на профессиональном оборудовании.</p>
+                            <div class="carousel-card-price">от 700 ₽</div>
+                        </div>
+                    </div>
+                </div>
+                <button class="carousel-btn carousel-btn-next" id="carouselNext" aria-label="Следующий">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
+            </div>
+            <div class="carousel-dots" id="carouselDots"></div>
+        <!-- СЕКЦИЯ ПРЕИМУЩЕСТВ -->
+        <section class="benefits-section">
+            <h2 class="carousel-title">Почему <span class="highlight">выбирают нас</span></h2>
+            <div class="benefits-grid">
+                <div class="benefit-card">
+                    <div class="benefit-icon">💎</div>
+                    <h3>Премиум качество</h3>
+                    <p>Используем только проверенные материалы и оборудование от лидеров рынка.</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="benefit-icon">👨‍🔧</div>
+                    <h3>Мастера эксперты</h3>
+                    <p>Наши специалисты проходят регулярную сертификацию и имеют огромный опыт.</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="benefit-icon">⏱️</div>
+                    <h3>Экономия времени</h3>
+                    <p>Ценим ваше время: работаем быстро, соблюдаем сроки и предлагаем чат-поддержку.</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="benefit-icon">🛡️</div>
+                    <h3>Гарантия на работы</h3>
+                    <p>Мы полностью уверены в нашем сервисе и предоставляем официальную гарантию.</p>
+                </div>
+            </div>
         </section>
     </main>
 
     <footer class="footer">
         <div class="container footer-content">
             <div class="footer-col">
-                <div class="logo-container" style="margin-bottom: 20px;">
-                    <img src="/img/svg/Logo.svg" alt="Logo" style="height: 30px;" />
-                     <span style="font-family: var(--font-display); margin-left:10px;">Car Service</span>
+                <div class="logo-container" style="margin-bottom:20px;">
+                    <img src="/img/svg/Logo.svg" alt="Logo" style="height:30px;" />
+                    <span style="font-family:var(--font-display);margin-left:10px;">Car Service</span>
                 </div>
                 <p>ООО "КИПУ"</p>
                 <p>ИНН 9709075179</p>
                 <p>ОГРН 1217700488763</p>
             </div>
-            
             <div class="footer-col">
                 <h3>Контакты</h3>
                 <p>+7 (978) 978 79 78</p>
                 <p>sewspot@bk.ru</p>
             </div>
-
             <div class="footer-col">
                 <h3>Информация</h3>
                 <div class="footer-links">
@@ -73,7 +166,6 @@
                     <a href="#">О нас</a>
                 </div>
             </div>
-
             <div class="footer-col">
                 <h3>Мы в соцсетях</h3>
                 <div class="social-links">
@@ -85,6 +177,116 @@
             </div>
         </div>
     </footer>
+
+    <!-- ===== CHAT WIDGET (только для авторизованных) ===== -->
+    <% if (isLoggedIn) { %>
+    <div class="chat-widget" id="chatWidget">
+        <div class="chat-window" id="chatWindow">
+            <div class="chat-header">
+                <div class="chat-header-avatar">🛠️</div>
+                <div class="chat-header-info">
+                    <div class="chat-header-name">Администрация</div>
+                    <div class="chat-header-status">Онлайн</div>
+                </div>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="chat-empty" id="chatEmpty">💬 Напишите нам — мы ответим в ближайшее время!</div>
+            </div>
+            <div class="chat-input-area">
+                <textarea class="chat-input" id="chatInput" placeholder="Введите сообщение..." rows="1"></textarea>
+                <button class="chat-send-btn" id="chatSendBtn" title="Отправить">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                </button>
+            </div>
+        </div>
+        <button class="chat-toggle-btn" id="chatToggle" title="Чат с поддержкой">
+            <span>💬</span>
+            <span class="chat-badge" id="chatBadge"></span>
+        </button>
+    </div>
+
+    <script>
+    (function() {
+        const toggle   = document.getElementById('chatToggle');
+        const winEl    = document.getElementById('chatWindow');
+        const messages = document.getElementById('chatMessages');
+        const input    = document.getElementById('chatInput');
+        const sendBtn  = document.getElementById('chatSendBtn');
+        const badge    = document.getElementById('chatBadge');
+        let empty      = document.getElementById('chatEmpty');
+        let isOpen = false, lastId = 0, pollTimer = null;
+
+        function fmt(dt) { return new Date(dt).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}); }
+        function esc(t)  { return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+        function appendMsg(msg) {
+            if (empty) { empty.remove(); empty = null; }
+            const d = document.createElement('div');
+            d.className = 'chat-message ' + (msg.sender === 'user' ? 'user' : 'admin');
+            d.innerHTML = `<div>${esc(msg.message)}</div><div class="chat-message-time">${fmt(msg.created_at || new Date())}</div>`;
+            messages.appendChild(d);
+            messages.scrollTop = messages.scrollHeight;
+            if (msg.id > lastId) lastId = msg.id;
+        }
+
+        function load() {
+            fetch('/chat/messages?since=0')
+                .then(r => r.ok ? r.json() : [])
+                .then(msgs => { if (Array.isArray(msgs)) msgs.forEach(appendMsg); markRead(); })
+                .catch(()=>{});
+        }
+
+        function poll() {
+            fetch('/chat/messages?since=' + lastId)
+                .then(r => r.ok ? r.json() : [])
+                .then(msgs => {
+                    if (!Array.isArray(msgs)) return;
+                    msgs.filter(m => m.id > lastId).forEach(m => {
+                        appendMsg(m);
+                        if (!isOpen && m.sender === 'admin') showBadge();
+                    });
+                    if (isOpen) markRead();
+                }).catch(()=>{});
+        }
+
+        function markRead() { fetch('/chat/read',{method:'POST'}).catch(()=>{}); badge.classList.remove('visible'); }
+        function showBadge() { badge.textContent='!'; badge.classList.add('visible'); }
+
+        function checkUnread() {
+            fetch('/chat/unread-count').then(r=>r.ok?r.json():{count:0})
+                .then(d=>{ if(d.count>0) showBadge(); }).catch(()=>{});
+        }
+
+        toggle.addEventListener('click', () => {
+            isOpen = !isOpen;
+            if (isOpen) {
+                winEl.classList.add('open');
+                if (lastId === 0) load(); else markRead();
+                pollTimer = setInterval(poll, 3000);
+            } else {
+                winEl.classList.remove('open');
+                clearInterval(pollTimer);
+            }
+        });
+
+        function send() {
+            const text = input.value.trim(); if (!text) return;
+            input.value = ''; input.style.height = 'auto';
+            fetch('/chat/send',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:text})})
+                .then(r=>r.ok?r.json():{})
+                .then(msg=>{ if(msg.id) appendMsg({...msg,created_at:new Date().toISOString()}); })
+                .catch(()=>{});
+        }
+
+        sendBtn.addEventListener('click', send);
+        input.addEventListener('keydown', e => { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();} });
+        input.addEventListener('input', () => { input.style.height='auto'; input.style.height=Math.min(input.scrollHeight,100)+'px'; });
+
+        checkUnread();
+        setInterval(checkUnread, 15000);
+    })();
+    </script>
+    <% } %>
 
     <script src="/js/a1.js"></script>
 </body>

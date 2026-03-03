@@ -10,13 +10,27 @@ const db = new sqlite3.Database(dbPath, (err) => {
         console.log("Connected to the SQLite database for seeding.");
 
         db.serialize(() => {
+            // Clear existing data
+            db.run("DELETE FROM chat_messages");
+            db.run("DELETE FROM Payments");
+            db.run("DELETE FROM Servis_order_details");
+            db.run("DELETE FROM Servis_parts_has_Employes");
+            db.run("DELETE FROM Servis_parts");
+            db.run("DELETE FROM Servis_orders");
+            db.run("DELETE FROM Fuel_Types_has_Servises");
+            db.run("DELETE FROM Fuel_Types");
+            db.run("DELETE FROM Inventory");
+            db.run("DELETE FROM Servises");
+            db.run("DELETE FROM Car");
+            db.run("DELETE FROM Employes");
+            db.run("DELETE FROM Customers");
+
             const hashedPasswordCustomer1 = bcrypt.hashSync('customer1pass', 10);
             const hashedPasswordCustomer2 = bcrypt.hashSync('customer2pass', 10);
 
             // Sample data for Customers
             const insertCustomer = db.prepare(`INSERT INTO Customers (first_name, last_name, email, phone, address, data_registrat, total_cost, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`);
             insertCustomer.run('Иван', 'Иванов', 'ivan@example.com', '123-456-7890', 'Ул. Ленина, 1', '2023-01-15', '15000', hashedPasswordCustomer1);
-            insertCustomer.run('Мария', 'Петрова', 'maria@example.com', '098-765-4321', 'Ул. Пушкина, 10', '2023-02-20', '22000', hashedPasswordCustomer2);
             insertCustomer.finalize();
 
             // Sample data for Employes
@@ -34,8 +48,10 @@ const db = new sqlite3.Database(dbPath, (err) => {
 
             // Sample data for Fuel_Types
             const insertFuelType = db.prepare(`INSERT INTO Fuel_Types (fuel_name, fuel_price) VALUES (?, ?)`);
-            insertFuelType.run('Бензин АИ-95', '50');
-            insertFuelType.run('Дизель', '55');
+            insertFuelType.run('АИ-92', '52');
+            insertFuelType.run('АИ-95', '58');
+            insertFuelType.run('АИ-100', '72');
+            insertFuelType.run('Дизель', '64');
             insertFuelType.finalize();
 
             // Sample data for Servises
@@ -47,6 +63,10 @@ const db = new sqlite3.Database(dbPath, (err) => {
             insertService.run('Проверка уровня жидкостей', 'ТО', '500');
             insertService.run('Регулировка развал-схождения', 'Ремонт', '2000');
             insertService.run('Заправка кондиционера', 'Обслуживание', '2500');
+            insertService.run('Заправка АИ-92', 'Заправка', '52');
+            insertService.run('Заправка АИ-95', 'Заправка', '58');
+            insertService.run('Заправка АИ-100', 'Заправка', '72');
+            insertService.run('Заправка ДТ', 'Заправка', '64');
             insertService.finalize();
 
             // Sample data for Inventory

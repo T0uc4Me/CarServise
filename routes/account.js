@@ -5,7 +5,7 @@ const db = require('../db/database');
 // GET запрос для страницы личного кабинета
 router.get('/', async (req, res) => {
     try {
-        const userId = req.session.userId; // ID текущего пользователя
+        const userId = req.session.customerId; // ID текущего пользователя
         if (!userId) {
             return res.redirect('/auth/login'); // Перенаправление на страницу входа, если пользователь не авторизован
         }
@@ -22,20 +22,29 @@ router.get('/', async (req, res) => {
             const fio = `${user.first_name} ${user.last_name}`;
 
             // Получение списка машин пользователя
-            db.all('SELECT mark, model FROM Car WHERE Customers_customer_id = ?', [userId], (err, cars) => {
+            db.all('SELECT car_id, mark, model FROM Car WHERE Customers_customer_id = ?', [userId], (err, cars) => {
                 if (err) {
                     console.error(err);
                     return res.status(500).render('error', { message: 'Ошибка сервера.' });
                 }
 
-                // Рендер страницы с данными пользователя и автомобилей
-                res.render('4lk', { 
-                    fio: fio, 
-                    phone: user.phone,
-                    email: user.email,
-                    date: user.data_registrat,
-                    cost: user.total_cost,
-                    cars 
+                // Получение истории заказов
+                db.all('SELECT order_id, servis_data, total_amount, order_status FROM Servis_orders WHERE Customers_customer_id = ? ORDER BY servis_data DESC', [userId], (err, orders) => {
+                    if (err) {
+                        console.error(err);
+                        return res.status(500).render('error', { message: 'Ошибка сервера.' });
+                    }
+
+                    // Рендер страницы с данными пользователя, автомобилей и заказов
+                    res.render('4lk', { 
+                        fio: fio, 
+                        phone: user.phone,
+                        email: user.email,
+                        date: user.data_registrat,
+                        cost: user.total_cost,
+                        cars,
+                        orders
+                    });
                 });
             });
         });
@@ -51,7 +60,7 @@ router.get('/', async (req, res) => {
 // POST запрос для добавления нового автомобиля
 router.post('/add-car', async (req, res) => {
     try {
-        const userId = req.session.userId;
+        const userId = req.session.customerId;
         if (!userId) {
             return res.status(401).json({ error: 'Пользователь не авторизован.' });
         }

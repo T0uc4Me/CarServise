@@ -5,11 +5,11 @@ const bcrypt = require("bcrypt");
 
 // Функция для проверки роли админа
 function checkAdminRole(req, res, next) {
-  if (!req.session.userId) {
+  if (!req.session.adminId) {
     return res.redirect("/admin/login"); // Если пользователь не авторизован, перенаправляем на страницу входа
   }
 
-  if (req.session.userRole !== "admin") {
+  if (req.session.adminRole !== "admin") {
     return res.status(403).send("Доступ запрещен. Только для администраторов."); // Если роль не "admin", запрещаем доступ
   }
 
@@ -34,8 +34,8 @@ router.get("/", checkAdminRole, async (req, res) => {
         res.render("admin", {
           activeOrders,
           inventory,
-          userRole: req.session.userRole,
-          userId: req.session.userId,
+          userRole: req.session.adminRole,
+          userId: req.session.adminId,
         });
       });
     });
@@ -73,8 +73,8 @@ router.post("/login", async (req, res) => {
       }
 
       // Сохраняем данные о пользователе в сессии
-      req.session.userId = user.employes_id;
-      req.session.userRole = user.role;
+      req.session.adminId = user.employes_id;
+      req.session.adminRole = user.role;
 
       if (user.role === "admin") {
         res.redirect("/admin");
@@ -163,6 +163,13 @@ router.delete("/delete-item/:inventoryId", checkAdminRole, (req, res) => {
     }
     res.status(200).send("Предмет успешно удален");
   });
+});
+
+// Выход из админ-панели
+router.get("/logout", (req, res) => {
+  delete req.session.adminId;
+  delete req.session.adminRole;
+  res.redirect("/admin/login");
 });
 
 module.exports = router;

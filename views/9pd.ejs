@@ -52,13 +52,24 @@
     
             <div class="form-group">
                 <label for="car">Автомобиль:</label>
-                <select id="car" name="carId" required>
-                  <% cars.forEach(car => { %>
-                  <option value="<%= car.car_id %>">
-                    <%= car.mark %> <%= car.model %>
-                  </option>
-                  <% }); %>
-                </select>
+                <% if (cars && cars.length > 0) { %>
+                    <select id="car" name="carId" required>
+                      <% cars.forEach(car => { %>
+                      <option value="<%= car.car_id %>">
+                        <%= car.mark %> <%= car.model %>
+                      </option>
+                      <% }); %>
+                    </select>
+                <% } else { %>
+                    <div class="no-cars-container">
+                        <select id="car" name="carId" required disabled>
+                            <option value="">Нет доступных авто</option>
+                        </select>
+                        <a href="/car" class="add-car-btn">
+                            <span class="plus-icon">+</span> Добавить автомобиль
+                        </a>
+                    </div>
+                <% } %>
             </div>
     
             <div class="form-group">
@@ -74,45 +85,86 @@
     
             <div class="form-group">
                 <label for="services">Услуги:</label>
-                <div class="service-options">
-                  <% services.forEach(service => { %>
-                  <label class="service-label">
-                    <input
-                      type="checkbox"
-                      name="services[]"
-                      value="<%= service.servis_id %>"
-                      class="service-checkbox"
-                      data-price="<%= service.servis_price %>"
-                    />
-                    <div class="service-content">
-                      <div class="service-header">
-                        <span class="service-name"><%= service.servis_name %></span>
-                        <span class="service-price"><%= service.servis_price %> ₽</span>
-                      </div>
-                      <% if (service.servis_name.toLowerCase().includes('заправка') ||
-                      service.servis_name.toLowerCase().includes('колеса')) { %>
-                      <div class="quantity-wrapper" style="display: none">
-                        <div class="quantity-controls">
-                          <button type="button" class="quantity-btn minus">-</button>
-                          <input
-                            type="number"
-                            name="quantity_<%= service.servis_id %>"
-                            class="quantity-input"
-                            value="1"
-                            min="1"
-                            max="100"
-                          />
-                          <button type="button" class="quantity-btn plus">+</button>
+                <div class="services-groups">
+                  <div class="service-category">
+                    <h3>Заправка топливом</h3>
+                    <div class="service-options">
+                      <% services.filter(s => s.servis_type === 'Заправка' || s.servis_name.toLowerCase().includes('заправка')).forEach(service => { %>
+                      <label class="service-label fuel-option">
+                        <input
+                          type="checkbox"
+                          name="services[]"
+                          value="<%= service.servis_id %>"
+                          class="service-checkbox"
+                          data-price="<%= service.servis_price %>"
+                        />
+                        <div class="service-content">
+                          <div class="service-header">
+                            <span class="service-name"><%= service.servis_name.replace('Заправка ', '') %></span>
+                            <span class="service-price"><%= service.servis_price %> ₽/л</span>
+                          </div>
+                          <div class="quantity-wrapper" style="display: none">
+                            <div class="quantity-controls">
+                              <button type="button" class="quantity-btn minus">-</button>
+                              <input
+                                type="number"
+                                name="quantity_<%= service.servis_id %>"
+                                class="quantity-input fuel-quantity"
+                                value="1000"
+                                min="100"
+                                step="100"
+                                data-price-per-liter="<%= service.servis_price %>"
+                              />
+                              <button type="button" class="quantity-btn plus">+</button>
+                            </div>
+                            <span class="quantity-unit">₽</span>
+                            <span class="liters-calc">(≈ 0 л.)</span>
+                          </div>
                         </div>
-                        <span class="quantity-unit">
-                          <%= service.servis_name.toLowerCase().includes('заправка') ?
-                          'литров' : 'штук' %>
-                        </span>
-                      </div>
-                      <% } %>
+                      </label>
+                      <% }); %>
                     </div>
-                  </label>
-                  <% }); %>
+                  </div>
+
+                  <div class="service-category">
+                    <h3>Техническое обслуживание и ремонт</h3>
+                    <div class="service-options">
+                      <% services.filter(s => s.servis_type !== 'Заправка' && !s.servis_name.toLowerCase().includes('заправка')).forEach(service => { %>
+                      <label class="service-label">
+                        <input
+                          type="checkbox"
+                          name="services[]"
+                          value="<%= service.servis_id %>"
+                          class="service-checkbox"
+                          data-price="<%= service.servis_price %>"
+                        />
+                        <div class="service-content">
+                          <div class="service-header">
+                            <span class="service-name"><%= service.servis_name %></span>
+                            <span class="service-price"><%= service.servis_price %> ₽</span>
+                          </div>
+                          <% if (service.servis_name.toLowerCase().includes('колеса') || service.servis_name.toLowerCase().includes('шина')) { %>
+                          <div class="quantity-wrapper" style="display: none">
+                            <div class="quantity-controls">
+                              <button type="button" class="quantity-btn minus">-</button>
+                              <input
+                                type="number"
+                                name="quantity_<%= service.servis_id %>"
+                                class="quantity-input"
+                                value="1"
+                                min="1"
+                                max="100"
+                              />
+                              <button type="button" class="quantity-btn plus">+</button>
+                            </div>
+                            <span class="quantity-unit">шт.</span>
+                          </div>
+                          <% } %>
+                        </div>
+                      </label>
+                      <% }); %>
+                    </div>
+                  </div>
                 </div>
             </div>
 
@@ -194,18 +246,28 @@
           let totalPrice = 0;
           checkboxes.forEach((checkbox) => {
             if (checkbox.checked) {
+              const label = checkbox.closest("label");
+              const quantityInput = label.querySelector(".quantity-input");
               const price = parseFloat(checkbox.getAttribute("data-price"));
-              const quantityInput = checkbox
-                .closest("label")
-                .querySelector(".quantity-input");
-              const quantity = quantityInput
-                ? parseInt(quantityInput.value)
-                : 1;
-              totalPrice += price * quantity;
+              const quantity = quantityInput ? parseFloat(quantityInput.value) : 1;
+              
+              if (label.classList.contains('fuel-option')) {
+                // Для топлива quantity - это уже сумма в рублях
+                totalPrice += quantity;
+                
+                // Обновляем расчет литров
+                const litersSpan = label.querySelector('.liters-calc');
+                if (litersSpan) {
+                  const liters = (quantity / price).toFixed(2);
+                  litersSpan.textContent = `(≈ ${liters} л.)`;
+                }
+              } else {
+                totalPrice += price * quantity;
+              }
             }
           });
 
-          totalPriceElement.textContent = `${totalPrice} ₽`;
+          totalPriceElement.textContent = `${totalPrice.toLocaleString('ru-RU')} ₽`;
           totalAmountElement.value = totalPrice;
         }
 
@@ -227,20 +289,24 @@
 
         document.querySelectorAll(".quantity-btn").forEach((btn) => {
           btn.addEventListener("click", function (e) {
-            e.preventDefault(); // Prevent submit
-            const input =
-              this.closest(".quantity-controls").querySelector(
-                ".quantity-input"
-              );
+            e.preventDefault();
+            const input = this.closest(".quantity-controls").querySelector(".quantity-input");
             let value = parseInt(input.value);
-            if (this.classList.contains("minus") && value > 1) {
-              value--;
-            } else if (this.classList.contains("plus") && value < 100) {
-              value++;
+            const step = input.classList.contains('fuel-quantity') ? 100 : 1;
+            
+            if (this.classList.contains("minus")) {
+              value = Math.max(parseInt(input.getAttribute('min') || 1), value - step);
+            } else if (this.classList.contains("plus")) {
+              value = value + step;
             }
             input.value = value;
             updateTotalPrice();
           });
+        });
+
+        // Also listen to direct input changes
+        document.querySelectorAll('.quantity-input').forEach(input => {
+          input.addEventListener('input', updateTotalPrice);
         });
 
         updateTotalPrice();

@@ -5,7 +5,7 @@ const db = require("../db/database");
 router.post("/", async (req, res) => {
   try {
     const { inventory_name, quantity_in_stock, inventory_price } = req.body;
-    const employes_employes_id = req.session.userId; // Получаем ID сотрудника из сессии
+    const employes_employes_id = req.session.adminId; // Получаем ID сотрудника из сессии
 
     // Добавляем новый товар в инвентарь
     db.run(
