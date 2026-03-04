@@ -23,13 +23,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ===== CAROUSEL =====
+    // ===== CAROUSEL (natives scroll + snap) =====
+    const trackContainer = document.getElementById('carouselTrack')
+        ? document.getElementById('carouselTrack').parentElement
+        : null;
     const track  = document.getElementById('carouselTrack');
     const dotsEl = document.getElementById('carouselDots');
     const prevBtn = document.getElementById('carouselPrev');
     const nextBtn = document.getElementById('carouselNext');
 
-    if (track) {
+    if (track && trackContainer) {
         let cards = track.querySelectorAll('.carousel-card');
         let currentIndex = 0;
         let visibleCount = 3;
@@ -57,22 +60,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        function updateUI() {
-            const card = cards[0];
-            if (!card) return;
-            
-            const cardWidth = card.offsetWidth;
-            const gap = 20; // Matches CSS gap
-            const offset = currentIndex * (cardWidth + gap);
-            
-            track.style.transform = `translateX(-${offset}px)`;
-
-            if (prevBtn) prevBtn.disabled = currentIndex === 0;
-            if (nextBtn) nextBtn.disabled = currentIndex >= getMaxIndex();
-            
-            updateDots();
-        }
-
         function updateDots() {
             if (!dotsEl) return;
             const dots = dotsEl.querySelectorAll('.carousel-dot');
@@ -84,7 +71,17 @@ document.addEventListener('DOMContentLoaded', () => {
         function goTo(index) {
             updateVisibleCount();
             currentIndex = Math.min(Math.max(0, index), getMaxIndex());
-            updateUI();
+
+            const card = cards[currentIndex];
+            if (card) {
+                // Нативный scroll — snap сам выровняет карточку
+                trackContainer.scrollLeft = card.offsetLeft - track.offsetLeft;
+            }
+
+            if (prevBtn) prevBtn.disabled = currentIndex === 0;
+            if (nextBtn) nextBtn.disabled = currentIndex >= getMaxIndex();
+
+            updateDots();
         }
 
         function next() {

@@ -346,6 +346,28 @@ textarea {
   font-size: 1rem;
   transition: var(--transition);
   box-sizing: border-box;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+/* Кастомная стрелка для select */
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23aaa' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 40px;
+  cursor: pointer;
+}
+
+/* Выпадающий список — тёмный фон, белый текст */
+select option {
+  background-color: #1e1c30;
+  color: #e0dff5;
+}
+
+select option[disabled] {
+  color: #666;
 }
 
 input[type="text"]:focus,
@@ -575,10 +597,22 @@ form button[type="submit"]:hover {
 }
 
 .carousel-track-container {
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
   flex: 1;
   border-radius: 20px;
   padding: 0 10px;
+  /* Скролл плавный как сваип */
+  scroll-behavior: smooth;
+  /* Snap: целая карточка всегда в поле зрения */
+  scroll-snap-type: x mandatory;
+  /* Скрыть скроллбар визуально */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.carousel-track-container::-webkit-scrollbar {
+  display: none;
 }
 
 /* ==================== ORDER PAGE ENHANCEMENTS ==================== */
@@ -625,30 +659,24 @@ form button[type="submit"]:hover {
 .carousel-track {
   display: flex;
   gap: 20px;
-  transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-  will-change: transform;
-  padding: 10px 0;
-  /* Add vertical padding for shadows */
-  padding-right: 250px;
-  /* Definitive fix: ensures last card is not sliced */
+  padding: 10px 4px;
   width: max-content;
 }
 
 .carousel-card {
   flex: 0 0 350px;
-  /* Fixed width to prevent squeezing */
   background: var(--card-bg);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(15px);
-  /* Kept existing webkit property */
   border: 1px solid var(--glass-border);
   border-radius: 20px;
   padding: 25px;
   position: relative;
   overflow: hidden;
-  /* For image corners */
   transition: var(--transition);
   cursor: pointer;
+  /* Snap: каждая карточка фиксируется по левому краю */
+  scroll-snap-align: start;
 }
 
 .carousel-card:hover {
