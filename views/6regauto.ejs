@@ -46,9 +46,6 @@
           <input type="text" id="vin" name="vin" required placeholder="XTA00000000000000" value="<%= (typeof car !== 'undefined' && car) ? car.wincode : '' %>">
 
           <button type="submit" class="reg"><%= (typeof car !== 'undefined' && car) ? 'Сохранить изменения' : 'Зарегистрировать' %></button>
-          <% if (typeof car !== 'undefined' && car) { %>
-            <a href="/account" class="btn btn-login" style="margin-top: 10px; width: 100%; text-align: center; background: transparent; border: 1px solid var(--glass-border);">Отмена</a>
-          <% } %>
         </form>
       </div>
     </div>

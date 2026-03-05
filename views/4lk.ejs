@@ -195,11 +195,25 @@
     </style>
   </head>
   <body>
-    <!-- Back Link -->
-    <a href="/" class="back-link">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
-        На главную
-    </a>
+    <header class="header container" style="backdrop-filter: none; border-bottom: 1px solid var(--glass-border); margin-bottom: 20px;">
+        <div class="header-left">
+            <button class="hamburger-btn" id="hamburgerBtn" aria-label="Меню" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <div class="logo-container">
+                <img src="/img/svg/Logo.svg" alt="Car Service Logo" class="logo-img" />
+                <div class="logo-text">Car Service</div>
+            </div>
+        </div>
+        <div class="auth-buttons">
+            <a href="/" class="btn btn-login" style="font-size: 0.8rem; padding: 8px 16px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+                На главную
+            </a>
+        </div>
+    </header>
 
     <div class="container dashboard-container">
         <!-- Sidebar -->
@@ -559,6 +573,110 @@
         // initial badge check
         checkUnread();
         setInterval(checkUnread, 15000);
+    })();
+    </script>
+
+    <script src="/js/a1.js"></script>
+
+    <!-- OVERLAY -->
+    <div class="nav-overlay" id="navOverlay"></div>
+
+    <!-- SIDE NAV -->
+    <nav class="side-nav" id="sideNav" aria-hidden="true">
+        <!-- Адрес вверху полупрозрачным -->
+        <div class="side-nav-address">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/>
+                <circle cx="12" cy="10" r="3"/>
+            </svg>
+            Симферополь ул.Толстого 52
+        </div>
+
+        <!-- Логотип внутри панели -->
+        <div class="side-nav-logo">
+            <img src="/img/svg/Logo.svg" alt="Car Service Logo" />
+            <span class="side-nav-logo-text">Car Service</span>
+        </div>
+
+        <!-- Кнопка закрыть -->
+        <button class="side-nav-close" id="sideNavClose" aria-label="Закрыть меню">&times;</button>
+
+        <!-- Ссылки -->
+        <div class="side-nav-links">
+            <a href="/#carousel-section" class="side-nav-link">
+                <span class="nav-icon">🔧</span>
+                Услуги
+            </a>
+            <a href="/#clients" class="side-nav-link">
+                <span class="nav-icon">👥</span>
+                Наши клиенты
+            </a>
+            <a href="/#about" class="side-nav-link">
+                <span class="nav-icon">ℹ️</span>
+                О нас
+            </a>
+            <div style="margin-top: auto; padding: 25px; border-top: 1px solid var(--glass-border);">
+                <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px;">Мы в соцсетях</div>
+                <div class="social-links">
+                    <a href="https://vk.com" class="social-icon"><img src="/img/svg/Vk.svg" alt="Vk" /></a>
+                    <a href="https://web.telegram.org" class="social-icon"><img src="/img/svg/Tg.svg" alt="Telegram" /></a>
+                    <a href="https://web.whatsapp.com/" class="social-icon"><img src="/img/svg/WhatsAap.svg" alt="WhatsAap" /></a>
+                    <a href="https://instagram.com" class="social-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.7;">
+                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                        </svg>
+                    </a>
+                </div>
+                <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.05);">
+                    <a href="/auth/logout" class="side-nav-link" style="color: #ff4d4d; padding: 0;">
+                        <span class="nav-icon">🚪</span>
+                        Выйти
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <script>
+    (function() {
+        const btn = document.getElementById('hamburgerBtn');
+        const nav = document.getElementById('sideNav');
+        const overlay = document.getElementById('navOverlay');
+        const closeBtn = document.getElementById('sideNavClose');
+
+        if (!btn || !nav || !overlay || !closeBtn) return;
+
+        function openNav() {
+            btn.classList.add('open');
+            nav.classList.add('open');
+            overlay.classList.add('visible');
+            btn.setAttribute('aria-expanded', 'true');
+            nav.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeNav() {
+            btn.classList.remove('open');
+            nav.classList.remove('open');
+            overlay.classList.remove('visible');
+            btn.setAttribute('aria-expanded', 'false');
+            nav.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+        }
+
+        btn.addEventListener('click', () => nav.classList.contains('open') ? closeNav() : openNav());
+        closeBtn.addEventListener('click', closeNav);
+        overlay.addEventListener('click', closeNav);
+
+        // Close on Escape
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeNav(); });
+
+        // Close when clicking link
+        document.querySelectorAll('.side-nav-link').forEach(link => {
+            link.addEventListener('click', closeNav);
+        });
     })();
     </script>
   </body>
