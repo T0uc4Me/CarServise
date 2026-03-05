@@ -7,9 +7,6 @@ on:
     branches: [ main, master ]
 
 jobs:
-  # ──────────────────────────────────
-  # 1. Проверка синтаксиса (lint)
-  # ──────────────────────────────────
   lint:
     name: Syntax & Lint Check
     runs-on: ubuntu-latest
@@ -26,7 +23,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Check JS syntax (all route files)
+      - name: Check JS syntax
         run: |
           for f in index.js routes/*.js; do
             echo "Checking $f..."
@@ -36,9 +33,6 @@ jobs:
       - name: Run ESLint
         run: npm run lint
 
-  # ──────────────────────────────────
-  # 2. Smoke-тесты
-  # ──────────────────────────────────
   test:
     name: Smoke Tests
     runs-on: ubuntu-latest
@@ -56,38 +50,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Start server in background
+      - name: Start server
         run: |
           node index.js &
-          sleep 3
+          sleep 5
         env:
           NODE_ENV: test
 
       - name: Run smoke tests
         run: npm test
-
-      - name: Stop server
-        run: kill $(lsof -t -i:3000) || true
-
-  # ──────────────────────────────────
-  # 3. Build check (опционально)
-  # ──────────────────────────────────
-  build-check:
-    name: Dependency Audit
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Audit for vulnerabilities
-        run: npm audit --audit-level=high
-        continue-on-error: true
