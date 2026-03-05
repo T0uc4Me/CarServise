@@ -73,7 +73,6 @@ app.get("/", (req, res) => {
   const isLoggedIn = !!req.session.customerId;
   let userName = "";
   if (isLoggedIn) {
-    // Получаем имя пользователя для хедера
     const db = require("./db/database");
     db.get("SELECT first_name FROM Customers WHERE customer_id = ?", [req.session.customerId], (err, user) => {
       userName = user ? user.first_name : "";
@@ -83,6 +82,23 @@ app.get("/", (req, res) => {
     res.render("1index", { isLoggedIn, userName });
   }
 });
+
+// Новые информационные страницы
+app.get("/about", (req, res) => {
+  const isLoggedIn = !!req.session.customerId;
+  res.render("about", { isLoggedIn });
+});
+
+app.get("/services", (req, res) => {
+  const isLoggedIn = !!req.session.customerId;
+  res.render("services", { isLoggedIn });
+});
+
+app.get("/clients", (req, res) => {
+  const isLoggedIn = !!req.session.customerId;
+  res.render("clients", { isLoggedIn });
+});
+
 app.get("/home2", (req, res) => {
   res.redirect("/"); // Единая главная страница
 });

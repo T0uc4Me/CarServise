@@ -38,7 +38,7 @@ router.get("/", async (req, res) => {
           }
 
           // Получение списка услуг для отображения
-          db.all("SELECT servis_id, servis_name, servis_price FROM Servises", [], (err, services) => {
+          db.all("SELECT servis_id, servis_name, servis_price, servis_type FROM Servises", [], (err, services) => {
             if (err) {
               console.error(err);
               return res
@@ -113,7 +113,7 @@ router.post("/", async (req, res) => {
                 if (!serviceRow) return resolve({ price: 0, id: serviceId });
                 
                 const servicePrice = parseFloat(serviceRow.servis_price) || 0;
-                const isFuel = serviceRow.servis_type === 'Заправка' || serviceRow.servis_name.toLowerCase().includes('заправка');
+                const isFuel = serviceRow.servis_type === 'Заправка' || serviceRow.servis_type === 'Жидкости' || serviceRow.servis_name.toLowerCase().includes('заправка');
                 
                 // Для топлива quantity - это сумма в рублях, которую мы получили с фронтенда
                 // Для остальных услуг quantity - это количество штук

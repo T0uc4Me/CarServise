@@ -14,8 +14,13 @@
   </head>
   <body>
     <header class="header container">
-        <div class="logo-container">
-            <a href="/home2" style="display: flex; align-items: center; gap: 15px;">
+        <div class="header-left">
+            <button class="hamburger-btn" id="hamburgerBtn" aria-label="Меню" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <a href="/" class="logo-container">
                 <img src="/img/svg/Logo.svg" alt="Car Service Logo" class="logo-img" />
                 <div class="logo-text">Car Service</div>
             </a>
@@ -87,9 +92,9 @@
                 <label for="services">Услуги:</label>
                 <div class="services-groups">
                   <div class="service-category">
-                    <h3>Заправка топливом</h3>
+                    <h3>Бензин</h3>
                     <div class="service-options">
-                      <% services.filter(s => s.servis_type === 'Заправка' || s.servis_name.toLowerCase().includes('заправка')).forEach(service => { %>
+                      <% services.filter(s => s.servis_type === 'Заправка').forEach(service => { %>
                       <label class="service-label fuel-option">
                         <input
                           type="checkbox"
@@ -106,19 +111,63 @@
                           <div class="quantity-wrapper" style="display: none">
                             <div class="quantity-controls">
                               <button type="button" class="quantity-btn minus">-</button>
-                              <input
-                                type="number"
-                                name="quantity_<%= service.servis_id %>"
-                                class="quantity-input fuel-quantity"
-                                value="1000"
-                                min="100"
-                                step="100"
-                                data-price-per-liter="<%= service.servis_price %>"
-                              />
+                              <div class="currency-input-wrapper">
+                                <input
+                                  type="number"
+                                  name="quantity_<%= service.servis_id %>"
+                                  class="quantity-input fuel-quantity"
+                                  value="1000"
+                                  min="100"
+                                  step="100"
+                                  data-price-per-liter="<%= service.servis_price %>"
+                                />
+                                <span class="currency-symbol-inside">₽</span>
+                              </div>
                               <button type="button" class="quantity-btn plus">+</button>
                             </div>
-                            <span class="quantity-unit">₽</span>
                             <span class="liters-calc">(≈ 0 л.)</span>
+                          </div>
+                        </div>
+                      </label>
+                      <% }); %>
+                    </div>
+                  </div>
+
+                  <div class="service-category">
+                    <h3>Работа с жидкостями</h3>
+                    <div class="service-options">
+                      <% services.filter(s => s.servis_type === 'Жидкости').forEach(service => { %>
+                      <label class="service-label fuel-option">
+                        <input
+                          type="checkbox"
+                          name="services[]"
+                          value="<%= service.servis_id %>"
+                          class="service-checkbox"
+                          data-price="<%= service.servis_price %>"
+                        />
+                        <div class="service-content">
+                          <div class="service-header">
+                            <span class="service-name"><%= service.servis_name %></span>
+                            <span class="service-price"><%= service.servis_price %> ₽/<%= service.servis_name.toLowerCase().includes('кондиционер') ? 'усл.' : 'л' %></span>
+                          </div>
+                          <div class="quantity-wrapper" style="display: none">
+                            <div class="quantity-controls">
+                              <button type="button" class="quantity-btn minus">-</button>
+                              <div class="currency-input-wrapper">
+                                <input
+                                  type="number"
+                                  name="quantity_<%= service.servis_id %>"
+                                  class="quantity-input fuel-quantity"
+                                  value="<%= service.servis_name.toLowerCase().includes('кондиционер') ? service.servis_price : '500' %>"
+                                  min="<%= service.servis_price %>"
+                                  step="<%= service.servis_name.toLowerCase().includes('кондиционер') ? service.servis_price : '100' %>"
+                                  data-price-per-liter="<%= service.servis_price %>"
+                                />
+                                <span class="currency-symbol-inside">₽</span>
+                              </div>
+                              <button type="button" class="quantity-btn plus">+</button>
+                            </div>
+                            <span class="liters-calc">(≈ 0 <%= service.servis_name.toLowerCase().includes('кондиционер') ? 'усл.' : 'л.' %>)</span>
                           </div>
                         </div>
                       </label>
@@ -129,7 +178,7 @@
                   <div class="service-category">
                     <h3>Техническое обслуживание и ремонт</h3>
                     <div class="service-options">
-                      <% services.filter(s => s.servis_type !== 'Заправка' && !s.servis_name.toLowerCase().includes('заправка')).forEach(service => { %>
+                      <% services.filter(s => s.servis_type !== 'Заправка' && s.servis_type !== 'Жидкости').forEach(service => { %>
                       <label class="service-label">
                         <input
                           type="checkbox"
@@ -217,10 +266,9 @@
             <div class="footer-col">
                 <h3>Информация</h3>
                 <div class="footer-links">
-                    <a href="#">Заказчикам</a>
-                    <a href="#">Исполнителям</a>
-                    <a href="#">Тарифы</a>
-                    <a href="#">О нас</a>
+                    <a href="/services">Услуги</a>
+                    <a href="/clients">Наши клиенты</a>
+                    <a href="/about">О нас</a>
                 </div>
             </div>
 
@@ -230,11 +278,63 @@
                     <a href="https://vk.com" class="social-icon"><img src="/img/svg/Vk.svg" alt="Vk" /></a>
                     <a href="https://web.telegram.org" class="social-icon"><img src="/img/svg/Tg.svg" alt="Telegram" /></a>
                     <a href="https://web.whatsapp.com/" class="social-icon"><img src="/img/svg/WhatsAap.svg" alt="WhatsAap" /></a>
-                    <a href="https://www.youtube.com/" class="social-icon"><img src="/img/svg/Ytube.svg" alt="YouTube" /></a>
+                    <a href="https://instagram.com" class="social-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.7;">
+                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                        </svg>
+                    </a>
                 </div>
             </div>
         </div>
     </footer>
+
+    <!-- OVERLAY & SIDE NAV -->
+    <div class="nav-overlay" id="navOverlay"></div>
+    <nav class="side-nav" id="sideNav" aria-hidden="true">
+        <div class="side-nav-address">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/>
+                <circle cx="12" cy="10" r="3"/>
+            </svg>
+            Симферополь ул.Толстого 52
+        </div>
+        <div class="side-nav-logo">
+            <img src="/img/svg/Logo.svg" alt="Car Service Logo" />
+            <span class="side-nav-logo-text">Car Service</span>
+        </div>
+        <button class="side-nav-close" id="sideNavClose" aria-label="Закрыть меню">&times;</button>
+        <div class="side-nav-links">
+            <a href="/services" class="side-nav-link">
+                <span class="nav-icon">🔧</span>
+                Услуги
+            </a>
+            <a href="/clients" class="side-nav-link">
+                <span class="nav-icon">👥</span>
+                Наши клиенты
+            </a>
+            <a href="/about" class="side-nav-link">
+                <span class="nav-icon">ℹ️</span>
+                О нас
+            </a>
+            <div style="margin-top: auto; padding: 25px; border-top: 1px solid var(--glass-border);">
+                <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px;">Мы в соцсетях</div>
+                <div class="social-links">
+                    <a href="https://vk.com" class="social-icon"><img src="/img/svg/Vk.svg" alt="Vk" /></a>
+                    <a href="https://web.telegram.org" class="social-icon"><img src="/img/svg/Tg.svg" alt="Telegram" /></a>
+                    <a href="https://web.whatsapp.com/" class="social-icon"><img src="/img/svg/WhatsAap.svg" alt="WhatsAap" /></a>
+                    <a href="https://instagram.com" class="social-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.7;">
+                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
 
     <script>
       document.addEventListener("DOMContentLoaded", function () {
@@ -255,11 +355,13 @@
                 // Для топлива quantity - это уже сумма в рублях
                 totalPrice += quantity;
                 
-                // Обновляем расчет литров
+                // Обновляем расчет объема
                 const litersSpan = label.querySelector('.liters-calc');
                 if (litersSpan) {
                   const liters = (quantity / price).toFixed(2);
-                  litersSpan.textContent = `(≈ ${liters} л.)`;
+                  const isAC = label.querySelector('.service-name').textContent.toLowerCase().includes('кондиционер');
+                  const unit = isAC ? 'усл.' : 'л.';
+                  litersSpan.textContent = `(≈ ${liters} ${unit})`;
                 }
               } else {
                 totalPrice += price * quantity;
@@ -292,7 +394,13 @@
             e.preventDefault();
             const input = this.closest(".quantity-controls").querySelector(".quantity-input");
             let value = parseInt(input.value);
-            const step = input.classList.contains('fuel-quantity') ? 100 : 1;
+            let step = 1;
+            
+            if (input.classList.contains('fuel-quantity')) {
+              const label = this.closest('label');
+              const isAC = label.querySelector('.service-name').textContent.toLowerCase().includes('кондиционер');
+              step = isAC ? parseFloat(label.querySelector('.service-checkbox').getAttribute('data-price')) : 100;
+            }
             
             if (this.classList.contains("minus")) {
               value = Math.max(parseInt(input.getAttribute('min') || 1), value - step);
@@ -308,6 +416,32 @@
         document.querySelectorAll('.quantity-input').forEach(input => {
           input.addEventListener('input', updateTotalPrice);
         });
+
+        // Hamburger Menu Logic
+        (function() {
+            const hBtn = document.getElementById('hamburgerBtn');
+            const sNav = document.getElementById('sideNav');
+            const sOverlay = document.getElementById('navOverlay');
+            const sCloseBtn = document.getElementById('sideNavClose');
+
+            function openSNav() {
+                hBtn.classList.add('open');
+                sNav.classList.add('open');
+                sOverlay.classList.add('visible');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeSNav() {
+                hBtn.classList.remove('open');
+                sNav.classList.remove('open');
+                sOverlay.classList.remove('visible');
+                document.body.style.overflow = '';
+            }
+
+            hBtn.addEventListener('click', () => sNav.classList.contains('open') ? closeSNav() : openSNav());
+            sCloseBtn.addEventListener('click', closeSNav);
+            sOverlay.addEventListener('click', closeSNav);
+        })();
 
         updateTotalPrice();
       });
