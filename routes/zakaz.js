@@ -71,7 +71,7 @@ router.post("/", async (req, res) => {
         .render("error", { message: "Пользователь не авторизован." });
     }
 
-    const { carId, address, additionalRequirements, services, payment_method } = req.body;
+    const { carId, address, services, payment_method } = req.body;
 
     const quantities = {};
     for (const key in req.body) {

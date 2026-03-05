@@ -4,7 +4,6 @@ const PORT = 3000;
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
 const session = require("express-session");
-const bcrypt = require("bcrypt");
 // Middleware для парсинга JSON
 app.use(express.json());
 //////////////////
