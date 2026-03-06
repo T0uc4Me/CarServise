@@ -1,27 +1,107 @@
 <!DOCTYPE html>
 <html lang="ru">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/css/admin.css" />
-    <title>Вход в админ-панель</title>
-  </head>
-  <body>
-    <div class="auth-container">
-      <h1>Вход в админ-панель</h1>
-      <form action="/admin/login" method="POST" class="auth-form">
-        <div class="form-group">
-          <label for="email">Email:</label>
-          <input type="email" id="email" name="email" required />
-        </div>
-        <div class="form-group">
-          <label for="password">Пароль:</label>
-          <input type="password" id="password" name="password" required />
-        </div>
-        <button type="submit" class="auth-button">Войти</button>
-      </form>
-      <p>Нет аккаунта? <a href="/admin/register">Зарегистрироваться</a></p>
-      <a href="/home2" class="back-link">На главную</a>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=ABeeZee&family=Unbounded:wght@400;700&display=swap" rel="stylesheet" />
+    <title>Вход для персонала | Car Service</title>
+    <style>
+        :root {
+            --bg: #0a0b10;
+            --primary: #6c63ff;
+            --accent: #00f2fe;
+            --border: rgba(255, 255, 255, 0.1);
+        }
+        body {
+            background-color: var(--bg);
+            color: white;
+            font-family: 'ABeeZee', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        .login-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 32px;
+            padding: 50px;
+            width: 400px;
+            text-align: center;
+        }
+        .logo {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 1.5rem;
+            margin-bottom: 40px;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        h2 {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        label {
+            display: block;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 8px;
+            margin-left: 5px;
+        }
+        input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 15px;
+            color: white;
+            font-family: inherit;
+        }
+        button {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            font-family: 'Unbounded', sans-serif;
+            font-weight: 700;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(108, 99, 255, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <div class="logo">Car Service</div>
+        <h2>Вход в панель</h2>
+        <form action="/admin/login" method="POST">
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="email" required placeholder="admin@carservice.ru">
+            </div>
+            <div class="form-group">
+                <label>Пароль</label>
+                <input type="password" name="password" required placeholder="••••••••">
+            </div>
+            <button type="submit">Войти</button>
+        </form>
     </div>
-  </body>
+</body>
 </html>

@@ -1,0 +1,579 @@
+:root {
+    --admin-bg: #0a0b10;
+    --admin-card: rgba(255, 255, 255, 0.05);
+    --admin-border: rgba(255, 255, 255, 0.1);
+    --admin-primary: #6c63ff;
+    --admin-accent: #00f2fe;
+    --admin-text: #ffffff;
+    --admin-text-muted: rgba(255, 255, 255, 0.6);
+    --admin-success: #00f2fe;
+    --admin-danger: #ff4d4d;
+    --font-main: 'ABeeZee', sans-serif;
+    --font-display: 'Unbounded', sans-serif;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--admin-bg);
+    color: var(--admin-text);
+    font-family: var(--font-main);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+header {
+    background: rgba(10, 11, 16, 0.8);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--admin-border);
+    padding: 20px 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header h1 {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    font-weight: 700;
+    background: linear-gradient(to right, var(--admin-primary), var(--admin-accent));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.user-controls {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.user-role {
+    font-size: 0.85rem;
+    color: var(--admin-text-muted);
+}
+
+#exit {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+#exit a h1 {
+    font-size: 0.9rem;
+    color: var(--admin-text);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: var(--transition);
+}
+
+#exit a:hover h1 {
+    color: var(--admin-danger);
+}
+
+.admin-main {
+    max-width: 1400px;
+    margin: 40px auto;
+    padding: 0 30px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+section {
+    background: var(--admin-card);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--admin-border);
+    border-radius: 24px;
+    padding: 30px;
+    transition: var(--transition);
+}
+
+section:hover {
+    border-color: rgba(108, 99, 255, 0.3);
+}
+
+section h2 {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+section h2::before {
+    content: '';
+    width: 4px;
+    height: 18px;
+    background: var(--admin-primary);
+    border-radius: 2px;
+}
+
+/* Orders List */
+.orders-list {
+    list-style: none;
+}
+
+.order-item {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--admin-border);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: var(--transition);
+}
+
+.order-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.success-message-admin {
+    background: rgba(0, 242, 254, 0.1);
+    color: var(--admin-accent);
+    border: 1px solid rgba(0, 242, 254, 0.2);
+    padding: 15px;
+    border-radius: 16px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: 600;
+}
+
+.view-button, .close-order-button, .add-button, .delete-item-button, .back-button {
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    text-decoration: none;
+    display: inline-block;
+}
+
+.view-button {
+    background: rgba(108, 99, 255, 0.1);
+    color: var(--admin-primary);
+    border: 1px solid rgba(108, 99, 255, 0.2);
+    margin-right: 10px;
+}
+
+.view-button:hover {
+    background: var(--admin-primary);
+    color: white;
+}
+
+.close-order-button {
+    background: rgba(255, 77, 77, 0.1);
+    color: var(--admin-danger);
+    border: 1px solid rgba(255, 77, 77, 0.2);
+}
+
+.close-order-button:hover {
+    background: var(--admin-danger);
+    color: white;
+}
+
+/* Inventory Table */
+.inventory-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+}
+
+.inventory-table th {
+    text-align: left;
+    color: var(--admin-text-muted);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 0 15px 10px;
+}
+
+.inventory-table td {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 15px;
+    border-top: 1px solid var(--admin-border);
+    border-bottom: 1px solid var(--admin-border);
+}
+
+.inventory-table td:first-child {
+    border-left: 1px solid var(--admin-border);
+    border-radius: 12px 0 0 12px;
+}
+
+.inventory-table td:last-child {
+    border-right: 1px solid var(--admin-border);
+    border-radius: 0 12px 12px 0;
+}
+
+.delete-item-button {
+    background: rgba(255, 77, 77, 0.1);
+    color: var(--admin-danger);
+    border: 1px solid rgba(255, 77, 77, 0.2);
+    padding: 6px 12px;
+}
+
+.add-button {
+    grid-column: 1 / -1;
+    background: linear-gradient(135deg, var(--admin-primary), var(--admin-accent));
+    color: white;
+    border: none;
+    font-family: var(--font-display);
+    padding: 15px 30px;
+}
+
+.add-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(108, 99, 255, 0.3);
+}
+
+/* Chat Section */
+.admin-chat-section {
+    grid-column: 1 / -1;
+}
+
+.tickets-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.ticket-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--admin-border);
+    border-radius: 20px;
+    padding: 20px;
+    cursor: pointer;
+    position: relative;
+    transition: var(--transition);
+}
+
+.ticket-card:hover {
+    border-color: var(--admin-primary);
+    transform: translateY(-5px);
+}
+
+.ticket-status {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--admin-primary);
+    position: absolute;
+    top: 20px;
+    left: 20px;
+}
+
+.has-unread .ticket-status {
+    background: var(--admin-accent);
+    box-shadow: 0 0 10px var(--admin-accent);
+}
+
+.ticket-title {
+    font-size: 0.75rem;
+    color: var(--admin-text-muted);
+    text-transform: uppercase;
+    margin-bottom: 5px;
+}
+
+.ticket-user {
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 10px;
+}
+
+.ticket-preview {
+    font-size: 0.85rem;
+    color: var(--admin-text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ticket-unread {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: var(--admin-accent);
+    color: var(--admin-bg);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 800;
+}
+
+/* Floating Chat */
+.admin-chat-windows-container {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    display: flex;
+    flex-direction: row-reverse;
+    gap: 20px;
+    pointer-events: none;
+    z-index: 1000;
+}
+
+.admin-floating-chat {
+    pointer-events: all;
+    width: 380px;
+    height: 550px;
+    background: #151722;
+    border: 1px solid var(--admin-border);
+    border-radius: 24px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.8);
+    overflow: hidden;
+    animation: slideIn 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.admin-floating-chat.closing {
+    animation: slideOut 0.2s forwards;
+}
+
+@keyframes slideOut {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(10px); }
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.chat-win-header {
+    padding: 18px 20px;
+    background: rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid var(--admin-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chat-win-title {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--admin-text);
+}
+
+.chat-win-subtitle {
+    font-size: 0.75rem;
+    color: var(--admin-text-muted);
+    margin-top: 2px;
+}
+
+.chat-win-close {
+    background: rgba(255, 255, 255, 0.05);
+    border: none;
+    color: var(--admin-text-muted);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    transition: var(--transition);
+}
+
+.chat-win-close:hover {
+    background: var(--admin-danger);
+    color: white;
+}
+
+.chat-win-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+}
+
+.chat-win-messages::-webkit-scrollbar {
+    width: 6px;
+}
+
+.chat-win-messages::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+.chat-message {
+    padding: 12px 16px;
+    border-radius: 16px;
+    max-width: 85%;
+    font-size: 0.9rem;
+    position: relative;
+}
+
+.chat-message.admin {
+    background: rgba(255, 255, 255, 0.05);
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+}
+
+.chat-message.user {
+    background: var(--admin-primary);
+    color: white;
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+}
+
+.chat-message-time {
+    font-size: 0.7rem;
+    opacity: 0.5;
+    margin-top: 6px;
+    text-align: right;
+}
+
+.chat-win-input-area {
+    padding: 15px 20px;
+    display: flex;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.02);
+    border-top: 1px solid var(--admin-border);
+}
+
+.chat-win-input-area input {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--admin-border);
+    border-radius: 12px;
+    padding: 10px 15px;
+    color: white;
+    font-size: 0.88rem;
+    outline: none;
+    transition: var(--transition);
+}
+
+.chat-win-input-area input:focus {
+    border-color: var(--admin-primary);
+}
+
+.chat-win-input-area button {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: var(--admin-primary);
+    border: none;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+
+.chat-win-input-area button:hover {
+    transform: scale(1.05);
+    background: #5a52cc;
+}
+
+.ticket-delete-btn {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    opacity: 0.3;
+    transition: var(--transition);
+}
+
+.ticket-card:hover .ticket-delete-btn {
+    opacity: 1;
+}
+
+.ticket-delete-btn:hover {
+    transform: scale(1.2);
+}
+
+/* Popup */
+.popup {
+    display: none;
+    position: fixed;
+    z-index: 200;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+}
+
+.popup-content {
+    background: #12141c;
+    border: 1px solid var(--admin-border);
+    border-radius: 32px;
+    margin: 10% auto;
+    width: 450px;
+    padding: 40px;
+    position: relative;
+}
+
+.close {
+    position: absolute;
+    top: 25px;
+    right: 30px;
+    font-size: 2rem;
+    color: var(--admin-text-muted);
+    cursor: pointer;
+}
+
+.popup__add-object {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.popup__add-object input {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--admin-border);
+    border-radius: 12px;
+    padding: 12px 15px;
+    color: white;
+    font-family: inherit;
+}
+
+.popup__add-object button {
+    background: var(--admin-primary);
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .admin-main {
+        grid-template-columns: 1fr;
+    }
+}

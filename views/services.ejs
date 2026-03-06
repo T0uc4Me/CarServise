@@ -22,6 +22,7 @@
             grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
             gap: 30px;
             margin-bottom: 80px;
+            align-items: start;
         }
 
         .service-full-card {
@@ -106,6 +107,89 @@
             font-size: 1.2rem;
             color: var(--accent-color);
         }
+
+        /* Accordion Styles */
+        .service-accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0, 1, 0, 1);
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.4s ease;
+        }
+
+        .service-full-card.active .service-accordion-content {
+            max-height: 1000px;
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.5s ease;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .service-img-wrapper {
+            cursor: pointer;
+            position: relative;
+        }
+
+        .service-img-wrapper::after {
+            content: '🔍';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            font-size: 2rem;
+            transition: var(--transition);
+            background: rgba(108, 99, 255, 0.4);
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .service-img-wrapper:hover::after {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .btn-more {
+            background: transparent;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-more:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .service-footer {
+            margin-top: auto;
+        }
+
+        .service-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .accordion-icon {
+            transition: transform 0.3s ease;
+            font-size: 0.8rem;
+        }
+
+        .service-full-card.active .accordion-icon {
+            transform: rotate(180deg);
+        }
     </style>
 </head>
 
@@ -139,134 +223,48 @@
         </section>
 
         <div class="services-grid">
-            <!-- Услуга 1 -->
-            <div class="service-full-card">
-                <div class="service-img-wrapper">
-                    <img src="/img/fuel.png" alt="Заправка топлива">
-                </div>
-                <div class="service-body">
-                    <span class="service-tag">Топливо</span>
-                    <h2 class="service-title">Выездная заправка</h2>
-                    <p class="service-text">Мы привезем качественное топливо (АИ-92, АИ-95, ДТ) прямо к вашему автомобилю. Вам не нужно тратить время на очереди на АЗС.</p>
-                    <div class="service-footer">
-                        <span class="service-price-tag">от 52 ₽/л</span>
-                        <a href="/zakaz" class="btn btn-login" style="padding: 8px 16px; border-radius: 12px;">Заказать</a>
+            <% services.forEach(service => { %>
+                <div class="service-full-card" id="service-<%= service.servis_id %>">
+                    <div class="service-img-wrapper accordion-toggle">
+                        <% 
+                            let imgSrc = "/img/maintenance.png";
+                            if (service.servis_name.toLowerCase().includes("заправка топливом") || service.servis_name.toLowerCase().includes("заправка")) imgSrc = "/img/fuel.png";
+                            else if (service.servis_name.toLowerCase().includes("шино")) imgSrc = "/img/tires.png";
+                            else if (service.servis_name.toLowerCase().includes("детейлинг")) imgSrc = "/img/detailing.jpg";
+                            else if (service.servis_name.toLowerCase().includes("аккумулятор")) imgSrc = "/img/battery.jpg";
+                            else if (service.servis_name.toLowerCase().includes("диагностика")) imgSrc = "/img/diagnostics.jpg";
+                        %>
+                        <img src="<%= imgSrc %>" alt="<%= service.servis_name %>">
+                    </div>
+                    <div class="service-body">
+                        <div class="service-header-row">
+                            <span class="service-tag"><%= service.is_merged_fluids ? "Комплексно" : (service.is_merged_fuel ? "Выездная заправка" : service.servis_type) %></span>
+                            <button class="btn-more accordion-toggle">
+                                Подробнее <span class="accordion-icon">▼</span>
+                            </button>
+                        </div>
+                        <h2 class="service-title"><%= service.servis_name %></h2>
+                        
+                        <div class="service-accordion-content">
+                            <div class="service-text">
+                                <% if (service.is_merged_fluids) { %>
+                                    <p><strong>Заправка кондиционера:</strong> Проверка герметичности системы, вакуумирование и заправка фреоном высокого качества.</p>
+                                    <p style="margin-top: 10px;"><strong>Доливка антифриза:</strong> Контроль уровня и долив качественного хладагента для защиты двигателя от перегрева.</p>
+                                    <p style="margin-top: 10px;"><strong>Омывающая жидкость:</strong> Заправка бачка качественной жидкостью для идеальной чистоты стекол.</p>
+                                <% } else if (service.is_merged_fuel) { %>
+                                    <p>Доставка и заправка любого типа топлива прямо к вашему авто. Мы привозим <strong>АИ-92, АИ-95, АИ-100 и высококлассное Дизельное топливо</strong>. Вам не нужно искать ближайшую АЗС и стоять в очередях.</p>
+                                <% } else { %>
+                                    <p>Профессиональное выполнение услуги: <%= service.servis_name.toLowerCase() %>. Мы гарантируем качественный результат и долговечность работы всех систем автомобиля на профессиональном оборудовании.</p>
+                                <% } %>
+                            </div>
+                            <div class="service-footer">
+                                <span class="service-price-tag"><%= service.servis_price %> <%= service.is_merged_fuel ? "₽/л" : "₽" %></span>
+                                <a href="/zakaz" class="btn btn-login" style="padding: 8px 16px; border-radius: 12px;">Заказать</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- Услуга 2 -->
-            <div class="service-full-card">
-                <div class="service-img-wrapper">
-                    <img src="/img/maintenance.png" alt="ТО">
-                </div>
-                <div class="service-body">
-                    <span class="service-tag">Сервис</span>
-                    <h2 class="service-title">Замена свечей и фильтров</h2>
-                    <p class="service-text">Комплексная замена расходных материалов: масляных, воздушных и салонных фильтров, а также свечей зажигания для стабильной работы двигателя.</p>
-                    <div class="service-footer">
-                        <span class="service-price-tag">от 800 ₽</span>
-                        <a href="/zakaz" class="btn btn-login" style="padding: 8px 16px; border-radius: 12px;">Заказать</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Услуга 3 -->
-            <div class="service-full-card">
-                <div class="service-img-wrapper">
-                    <img src="/img/tires.png" alt="Шиномонтаж">
-                </div>
-                <div class="service-body">
-                    <span class="service-tag">Колеса</span>
-                    <h2 class="service-title">Шиномонтаж</h2>
-                    <p class="service-text">Сезонная смена шин, балансировка и ремонт проколов. Быстро и аккуратно на профессиональном оборудовании.</p>
-                    <div class="service-footer">
-                        <span class="service-price-tag">от 800 ₽</span>
-                        <a href="/zakaz" class="btn btn-login" style="padding: 8px 16px; border-radius: 12px;">Заказать</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Услуга 4 -->
-            <div class="service-full-card">
-                <div class="service-img-wrapper">
-                    <img src="/img/detailing.jpg" alt="Детейлинг">
-                </div>
-                <div class="service-body">
-                    <span class="service-tag">Уход</span>
-                    <h2 class="service-title">Детейлинг салона</h2>
-                    <p class="service-text">Глубокая химчистка, полировка элементов интерьера и нанесение защитных покрытий для сохранения новизны салона.</p>
-                    <div class="service-footer">
-                        <span class="service-price-tag">от 5 000 ₽</span>
-                        <a href="/zakaz" class="btn btn-login" style="padding: 8px 16px; border-radius: 12px;">Заказать</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Услуга 5 -->
-            <div class="service-full-card">
-                <div class="service-img-wrapper">
-                    <img src="/img/battery.jpg" alt="АКБ">
-                </div>
-                <div class="service-body">
-                    <span class="service-tag">Электрика</span>
-                    <h2 class="service-title">Замена аккумулятора</h2>
-                    <p class="service-text">Проверка состояния вашей АКБ и установка новой с гарантией. Бесплатная утилизация старого аккумулятора.</p>
-                    <div class="service-footer">
-                        <span class="service-price-tag">от 500 ₽</span>
-                        <a href="/zakaz" class="btn btn-login" style="padding: 8px 16px; border-radius: 12px;">Заказать</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Услуга 6 -->
-            <div class="service-full-card">
-                <div class="service-img-wrapper">
-                    <img src="/img/diagnostics.jpg" alt="Диагностика">
-                </div>
-                <div class="service-body">
-                    <span class="service-tag">Диагностика</span>
-                    <h2 class="service-title">Компьютерная диагностика</h2>
-                    <p class="service-text">Полное сканирование электронных систем автомобиля, выявление и сброс ошибок, профессиональная консультация мастера.</p>
-                    <div class="service-footer">
-                        <span class="service-price-tag">от 1 500 ₽</span>
-                        <a href="/zakaz" class="btn btn-login" style="padding: 8px 16px; border-radius: 12px;">Заказать</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Услуга 7 (Key Repair) -->
-            <div class="service-full-card">
-                <div class="service-img-wrapper">
-                    <!-- Assuming we don't have key.jpg, I'll use a placeholder or something related -->
-                    <img src="/img/maintenance.png" alt="Ключи">
-                </div>
-                <div class="service-body">
-                    <span class="service-tag">Ремонт</span>
-                    <h2 class="service-title">Ремонт ключа зажигания</h2>
-                    <p class="service-text">Замена кнопок, корпуса, батареек или перепрошивка чипа ключа зажигания. Изготовление дубликатов.</p>
-                    <div class="service-footer">
-                        <span class="service-price-tag">от 1 200 ₽</span>
-                        <a href="/zakaz" class="btn btn-login" style="padding: 8px 16px; border-radius: 12px;">Заказать</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Услуга 8 (Roadside Assistance) -->
-            <div class="service-full-card">
-                <div class="service-img-wrapper">
-                    <img src="/img/fuel.png" alt="Дорожная помощь">
-                </div>
-                <div class="service-body">
-                    <span class="service-tag">Срочно</span>
-                    <h2 class="service-title">СРАЗУ НА ДОРОГЕ</h2>
-                    <p class="service-text">Экстренная заправка кондиционера, доливка антифриза или омывающей жидкости прямо на месте стоянки вашего авто.</p>
-                    <div class="service-footer">
-                        <span class="service-price-tag">от 300 ₽</span>
-                        <a href="/zakaz" class="btn btn-login" style="padding: 8px 16px; border-radius: 12px;">Заказать</a>
-                    </div>
-                </div>
-            </div>
+            <% }); %>
         </div>
     </main>
 
@@ -382,6 +380,14 @@
             btn.addEventListener('click', () => nav.classList.contains('open') ? closeNav() : openNav());
             closeBtn.addEventListener('click', closeNav);
             overlay.addEventListener('click', closeNav);
+
+            // Accordion Logic
+            document.querySelectorAll('.accordion-toggle').forEach(element => {
+                element.addEventListener('click', (e) => {
+                    const card = element.closest('.service-full-card');
+                    card.classList.toggle('active');
+                });
+            });
         })();
     </script>
 </body>

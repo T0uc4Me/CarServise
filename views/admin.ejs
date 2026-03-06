@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/css/admin.css" />
+    <link rel="stylesheet" href="/css/admin-new.css" />
     <title>Администратор</title>
   </head>
   <body>
@@ -200,7 +200,7 @@
                         <div class="chat-win-title">Тикет: ${escapeHtml(user.first_name + ' ' + user.last_name)}</div>
                         <div class="chat-win-subtitle">${user.phone || ''} | ${user.email || ''}</div>
                     </div>
-                    <button class="chat-win-close" title="Закрыть">×</button>
+                    <button type="button" class="chat-win-close" id="close-${cid}" title="Закрыть">&times;</button>
                 </div>
                 <div class="chat-win-messages"></div>
                 <div class="chat-win-input-area">
@@ -218,12 +218,16 @@
             const ticketData = { el: win, lastId: 0, msgBox };
             openTickets.set(cid, ticketData);
 
-            close.onclick = (e) => {
+            const closeBtn = win.querySelector('.chat-win-close');
+            closeBtn.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                win.remove();
-                openTickets.delete(cid);
-            };
+                win.classList.add('closing');
+                setTimeout(() => {
+                    win.remove();
+                    openTickets.delete(cid);
+                }, 200);
+            });
 
             btn.onclick = () => sendMessage(cid, input, ticketData);
             input.onkeydown = (e) => { if(e.key === 'Enter') sendMessage(cid, input, ticketData); };

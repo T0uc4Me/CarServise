@@ -90,7 +90,54 @@ app.get("/about", (req, res) => {
 
 app.get("/services", (req, res) => {
   const isLoggedIn = !!req.session.customerId;
-  res.render("services", { isLoggedIn });
+  const db = require("./db/database");
+  
+  db.all("SELECT * FROM Servises", [], (err, services) => {
+    if (err) {
+      console.error(err);
+      return res.render("services", { isLoggedIn, services: [] });
+    }
+
+    // Логика объединения услуг
+    const mergedServices = [];
+    const fluidServices = [];
+    const fuelServices = [];
+    
+    services.forEach(service => {
+      const name = service.servis_name.toLowerCase();
+      if (name.includes("заправка кондиционера") || name.includes("жидкость для омывания") || name.includes("доливка антифриза")) {
+        fluidServices.push(service);
+      } else if (name.includes("заправка аи") || name.includes("заправка дт")) {
+        fuelServices.push(service);
+      } else {
+        mergedServices.push(service);
+      }
+    });
+
+    if (fuelServices.length > 0) {
+      mergedServices.push({
+        servis_id: "merged-fuel",
+        servis_name: "Заправка топливом",
+        servis_type: "Заправка",
+        servis_price: "от 52",
+        is_merged_fuel: true,
+        details: fuelServices
+      });
+    }
+
+    if (fluidServices.length > 0) {
+      mergedServices.push({
+        servis_id: "merged-fluids",
+        servis_name: "Работа с жидкостями",
+        servis_type: "Жидкости",
+        servis_price: "от 80",
+        is_merged_fluids: true,
+        details: fluidServices
+      });
+    }
+
+    res.render("services", { isLoggedIn, services: mergedServices });
+  });
 });
 
 app.get("/clients", (req, res) => {
