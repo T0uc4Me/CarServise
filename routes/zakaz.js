@@ -25,9 +25,8 @@ router.get("/", async (req, res) => {
       }
       const userName = `${userRow.first_name} ${userRow.last_name}`;
 
-      // Получение списка автомобилей пользователя
       db.all(
-        "SELECT car_id, mark, model FROM Car WHERE Customers_customer_id = ?",
+        "SELECT car_id, mark, model FROM Car WHERE Customers_customer_id = ? AND is_deleted = 0",
         [userId],
         (err, cars) => {
           if (err) {
@@ -201,7 +200,7 @@ router.post("/", async (req, res) => {
                           }
                           const userName = userRow ? `${userRow.first_name} ${userRow.last_name}` : "Неизвестный пользователь";
 
-                          db.all("SELECT car_id, mark, model FROM Car WHERE Customers_customer_id = ?", [customerId], (err, cars) => {
+                          db.all("SELECT car_id, mark, model FROM Car WHERE Customers_customer_id = ? AND is_deleted = 0", [customerId], (err, cars) => {
                             if (err) {
                               console.error(err);
                               return res.status(500).render("error", {

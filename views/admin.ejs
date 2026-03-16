@@ -4,6 +4,50 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/css/admin-new.css" />
+    <style>
+      .admin-tabs {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 30px;
+        background: rgba(255, 255, 255, 0.03);
+        padding: 10px;
+        border-radius: 16px;
+        border: 1px solid var(--admin-border);
+      }
+      .tab-btn {
+        padding: 12px 24px;
+        border-radius: 12px;
+        background: transparent;
+        color: var(--admin-text-muted);
+        border: none;
+        cursor: pointer;
+        font-family: var(--font-display);
+        font-size: 0.9rem;
+        transition: var(--transition);
+      }
+      .tab-btn:hover {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--admin-text);
+      }
+      .tab-btn.active {
+        background: var(--admin-primary);
+        color: white;
+        box-shadow: 0 4px 15px rgba(108, 99, 255, 0.3);
+      }
+      .tab-panel {
+        display: none;
+        grid-column: 1 / -1;
+      }
+      .tab-panel.active {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 30px;
+      }
+      /* Adjust main to be single column as tabs will separate them */
+      .admin-main {
+        grid-template-columns: 1fr;
+      }
+    </style>
     <title>Администратор</title>
   </head>
   <body>
@@ -19,65 +63,85 @@
       </div>
     </header>
     <main class="admin-main">
-      <section class="orders-section">
-        <h2>Активные заказы</h2>
-        <ul class="orders-list">
-          <% activeOrders.forEach(order => { %>
-          <li class="order-item">
-            Заказ ID: <%= order.order_id %> - Статус: <%= order.order_status %>
-            <a href="/order-details/<%= order.order_id %>" class="view-button">
-              Просмотреть
-            </a>
-            <button
-              class="close-order-button"
-              data-order-id="<%= order.order_id %>"
-            >
-              Закрыть
-            </button>
-          </li>
-          <% }); %>
-        </ul>
-      </section>
-      <section class="inventory-section">
-        <h2>Инвентарь</h2>
-        <table class="inventory-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Название</th>
-              <th>Количество</th>
-              <th>Цена</th>
-              <th>Действие</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% inventory.forEach(item => { %>
-            <tr>
-              <td><%= item.inventory_id %></td>
-              <td><%= item.inventory_name %></td>
-              <td><%= item.quantity_in_stock %></td>
-              <td><%= item.inventory_price %> ₽</td>
-              <td>
-                <button
-                  class="delete-item-button"
-                  data-inventory-id="<%= item.inventory_id %>"
-                >
-                  Удалить
+      <div class="admin-tabs">
+        <button class="tab-btn active" data-tab="orders">Активные заказы</button>
+        <button class="tab-btn" data-tab="inventory">Инвентарь</button>
+        <button class="tab-btn" data-tab="support">Поддержка</button>
+      </div>
+
+      <div id="orders-tab" class="tab-panel active">
+        <section class="orders-section">
+          <h2>Активные заказы</h2>
+          <ul class="orders-list">
+            <% activeOrders.forEach(order => { %>
+            <li class="order-item">
+              <div style="display:flex; flex-direction:column; gap:4px; flex:1;">
+                <span style="font-weight:700;">Заказ #<%= order.order_id %></span>
+                <span style="font-size:0.8rem; color:rgba(255,255,255,0.5);">Статус: <%= order.order_status %></span>
+              </div>
+              <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                <!-- Dropdown назначения мастера -->
+                <select class="master-select" data-order-id="<%= order.order_id %>"
+                        style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.15);color:#fff;
+                               border-radius:10px;padding:8px 12px;font-size:0.82rem;cursor:pointer;outline:none;">
+                  <option value="">— Назначить мастера —</option>
+                </select>
+                <button class="assign-master-button view-button" data-order-id="<%= order.order_id %>">
+                  Назначить
                 </button>
-              </td>
-            </tr>
+                <a href="/order-details/<%= order.order_id %>" class="view-button">Просмотреть</a>
+                <button class="close-order-button" data-order-id="<%= order.order_id %>">Закрыть</button>
+              </div>
+            </li>
             <% }); %>
-          </tbody>
-        </table>
-      </section>
+          </ul>
+        </section>
+      </div>
+
+      <div id="inventory-tab" class="tab-panel">
+        <section class="inventory-section">
+          <h2>Инвентарь</h2>
+          <table class="inventory-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Название</th>
+                <th>Количество</th>
+                <th>Цена</th>
+                <th>Действие</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% inventory.forEach(item => { %>
+              <tr>
+                <td><%= item.inventory_id %></td>
+                <td><%= item.inventory_name %></td>
+                <td><%= item.quantity_in_stock %></td>
+                <td><%= item.inventory_price %> ₽</td>
+                <td>
+                  <button
+                    class="delete-item-button"
+                    data-inventory-id="<%= item.inventory_id %>"
+                  >
+                    Удалить
+                  </button>
+                </td>
+              </tr>
+              <% }); %>
+            </tbody>
+          </table>
+          <button id="add-item-button" class="add-button" style="margin-top: 20px;">Добавить предмет</button>
+        </section>
+      </div>
       
-      <button id="add-item-button" class="add-button">Добавить предмет</button>
-      <section class="admin-chat-section">
-        <h2>Активные тикеты</h2>
-        <div class="tickets-grid" id="ticketsGrid">
-            <div style="padding:16px; color: rgba(255,255,255,0.4); text-align:center; grid-column: 1/-1;">Загрузка активных сессий...</div>
-        </div>
-      </section>
+      <div id="support-tab" class="tab-panel">
+        <section class="admin-chat-section">
+          <h2>Активные тикеты</h2>
+          <div class="tickets-grid" id="ticketsGrid">
+              <div style="padding:16px; color: rgba(255,255,255,0.4); text-align:center; grid-column: 1/-1;">Загрузка активных сессий...</div>
+          </div>
+        </section>
+      </div>
     </main>
 
     <!-- Контейнер для плавающих окон чата -->
@@ -140,6 +204,44 @@
               else alert("Не удалось закрыть заказ.");
             } catch (error) { console.error("Ошибка при закрытии заказа:", error); }
           }
+        });
+      });
+
+      // ===== MASTER ASSIGN SCRIPTS =====
+      // Загружаем список мастеров и заполняем все dropdown
+      (async function loadMasters() {
+        try {
+          const res = await fetch('/admin/masters');
+          const masters = await res.json();
+          const selects = document.querySelectorAll('.master-select');
+          selects.forEach(sel => {
+            masters.forEach(m => {
+              const opt = document.createElement('option');
+              opt.value = m.employes_id;
+              opt.textContent = `${m.first_name} ${m.last_name}`;
+              sel.appendChild(opt);
+            });
+          });
+        } catch(e) { console.error('Ошибка загрузки мастеров:', e); }
+      })();
+
+      // Обработка кнопки "Назначить"
+      document.querySelectorAll('.assign-master-button').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const orderId = btn.getAttribute('data-order-id');
+          const sel = document.querySelector(`.master-select[data-order-id="${orderId}"]`);
+          const masterId = sel ? sel.value : '';
+          if (!masterId) { alert('Выберите мастера из списка.'); return; }
+          try {
+            const res = await fetch(`/admin/assign-master/${orderId}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ masterId: parseInt(masterId) })
+            });
+            const data = await res.json();
+            if (res.ok) { alert(`Мастер успешно назначен на заказ #${orderId}`); }
+            else { alert('Ошибка: ' + (data.error || 'неизвестная ошибка')); }
+          } catch(e) { console.error('Ошибка назначения мастера:', e); }
         });
       });
 
@@ -304,6 +406,21 @@
         setInterval(loadTickets, 10000);
         setInterval(pollAll, 3000);
       })();
+
+      // ===== TAB SWITCHING LOGIC =====
+      document.querySelectorAll('.tab-btn').forEach(button => {
+        button.addEventListener('click', () => {
+          const tabName = button.getAttribute('data-tab');
+          
+          // Update buttons
+          document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+          button.classList.add('active');
+          
+          // Update panels
+          document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
+          document.getElementById(`${tabName}-tab`).classList.add('active');
+        });
+      });
     </script>
   </body>
 </html>

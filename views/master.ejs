@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/css/master.css" />
+    <title>Кабинет мастера</title>
+  </head>
+  <body>
+    <header>
+      <div class="header-container">
+        <div class="header-logo">
+          <div class="header-logo-icon">🔧</div>
+          <div>
+            <div class="header-title">Кабинет мастера</div>
+            <div class="header-subtitle"><%= master.first_name %> <%= master.last_name %></div>
+          </div>
+        </div>
+        <div class="user-controls">
+          <span class="user-badge">🛠 Мастер</span>
+          <a href="/master/logout" class="logout-btn">Выйти</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="master-main">
+
+      <!-- Статистика -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-icon">📋</div>
+          <div>
+            <div class="stat-value"><%= orders.length %></div>
+            <div class="stat-label">Всего заказов</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">⚡</div>
+          <div>
+            <div class="stat-value"><%= orders.filter(o => o.order_status === 'active').length %></div>
+            <div class="stat-label">Активных</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">✅</div>
+          <div>
+            <div class="stat-value"><%= orders.filter(o => o.order_status !== 'active').length %></div>
+            <div class="stat-label">Завершённых</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Список заказов -->
+      <div class="section-header">
+        <h2>Назначенные заказы</h2>
+      </div>
+
+      <% if (orders.length === 0) { %>
+        <div class="empty-state">
+          <div class="empty-state-icon">📭</div>
+          <h3>Заказов пока нет</h3>
+          <p>Администратор ещё не назначил вам заказы</p>
+        </div>
+      <% } else { %>
+        <div class="orders-grid">
+          <% orders.forEach(order => { %>
+          <div class="order-card">
+            <div class="order-card-head">
+              <div class="order-id">Заказ <span>#<%= order.order_id %></span></div>
+              <span class="status-badge <%= order.order_status === 'active' ? 'status-active' : 'status-closed' %>">
+                <%= order.order_status === 'active' ? 'Активный' : 'Закрыт' %>
+              </span>
+            </div>
+
+            <div class="order-info-row">
+              <div class="order-info-item">
+                <span class="info-icon">👤</span>
+                <span class="info-label">Клиент</span>
+                <span class="info-value"><%= order.first_name %> <%= order.last_name %></span>
+              </div>
+              <div class="order-info-item">
+                <span class="info-icon">📞</span>
+                <span class="info-label">Телефон</span>
+                <span class="info-value"><%= order.phone || '—' %></span>
+              </div>
+              <div class="order-info-item">
+                <span class="info-icon">🚗</span>
+                <span class="info-label">Авто</span>
+                <span class="info-value"><%= order.mark %> <%= order.model %> (<%= order.year %>)</span>
+              </div>
+              <div class="order-info-item">
+                <span class="info-icon">📅</span>
+                <span class="info-label">Дата</span>
+                <span class="info-value"><%= order.servis_data %></span>
+              </div>
+              <% if (order.address) { %>
+              <div class="order-info-item">
+                <span class="info-icon">📍</span>
+                <span class="info-label">Адрес</span>
+                <span class="info-value"><%= order.address %></span>
+              </div>
+              <% } %>
+            </div>
+
+            <div class="order-amount">
+              <span class="amount-label">Стоимость работ</span>
+              <span class="amount-value"><%= order.total_amount %> ₽</span>
+            </div>
+
+            <a href="/master/order/<%= order.order_id %>" class="view-order-btn">
+              Просмотреть детали →
+            </a>
+          </div>
+          <% }) %>
+        </div>
+      <% } %>
+    </main>
+  </body>
+</html>

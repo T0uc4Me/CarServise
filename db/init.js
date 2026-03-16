@@ -58,6 +58,7 @@ const db = new sqlite3.Database(dbPath, (err) => {
                 year DATE,
                 gos_nomer VARCHAR(45),
                 wincode VARCHAR(45),
+                is_deleted INTEGER DEFAULT 0,
                 Customers_customer_id INT,
                 FOREIGN KEY (Customers_customer_id) REFERENCES Customers(customer_id)
             )`);

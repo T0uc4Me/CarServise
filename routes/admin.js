@@ -72,12 +72,14 @@ router.post("/login", async (req, res) => {
         return res.status(401).send("Неверный email или пароль");
       }
 
-      // Сохраняем данные о пользователе в сессии
-      req.session.adminId = user.employes_id;
-      req.session.adminRole = user.role;
-
       if (user.role === "admin") {
+        req.session.adminId = user.employes_id;
+        req.session.adminRole = user.role;
         res.redirect("/admin");
+      } else if (user.role === "master") {
+        req.session.masterId = user.employes_id;
+        req.session.masterRole = user.role;
+        res.redirect("/master"); // Мастер попадает на свою страницу
       } else {
         res.redirect("/");  // Для пользователей с другой ролью перенаправляем на домашнюю страницу
       }
@@ -170,6 +172,42 @@ router.get("/logout", (req, res) => {
   delete req.session.adminId;
   delete req.session.adminRole;
   res.redirect("/admin/login");
+});
+
+// GET /admin/masters — список мастеров (JSON, для dropdown в панели)
+router.get("/masters", checkAdminRole, (req, res) => {
+  db.all("SELECT employes_id, first_name, last_name FROM Employes WHERE role = 'master'", [], (err, masters) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ error: "Ошибка сервера" });
+    }
+    res.json(masters);
+  });
+});
+
+// PUT /admin/assign-master/:orderId — назначить мастера на заказ
+router.put("/assign-master/:orderId", checkAdminRole, (req, res) => {
+  const { orderId } = req.params;
+  const { masterId } = req.body;
+
+  if (!masterId) {
+    return res.status(400).json({ error: "masterId не указан" });
+  }
+
+  db.run(
+    "UPDATE Servis_orders SET Employes_employes_id = ? WHERE order_id = ?",
+    [masterId, orderId],
+    function (err) {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ error: "Ошибка сервера" });
+      }
+      if (this.changes === 0) {
+        return res.status(404).json({ error: "Заказ не найден" });
+      }
+      res.status(200).json({ ok: true });
+    }
+  );
 });
 
 module.exports = router;

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/css/master.css" />
+    <title>Детали заказа #<%= servis_orders.order_id %></title>
+  </head>
+  <body>
+    <header>
+      <div class="header-container">
+        <div class="header-logo">
+          <div class="header-logo-icon">🔧</div>
+          <div>
+            <div class="header-title">Заказ #<%= servis_orders.order_id %></div>
+            <div class="header-subtitle">Просмотр деталей</div>
+          </div>
+        </div>
+        <div class="user-controls">
+          <a href="/master" class="back-btn">← Назад</a>
+          <a href="/master/logout" class="logout-btn">Выйти</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="master-main">
+
+      <!-- Основная информация 2x2 -->
+      <div class="details-grid">
+
+        <!-- Заказ -->
+        <div class="detail-section">
+          <h2>Информация о заказе</h2>
+          <table class="details-table">
+            <tr>
+              <th>Статус:</th>
+              <td>
+                <span class="status-badge <%= servis_orders.order_status === 'active' ? 'status-active' : 'status-closed' %>">
+                  <%= servis_orders.order_status === 'active' ? 'Активный' : 'Закрыт' %>
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <th>Дата создания:</th>
+              <td><%= servis_orders.servis_data %></td>
+            </tr>
+            <tr>
+              <th>Стоимость:</th>
+              <td><strong><%= servis_orders.total_amount %> ₽</strong></td>
+            </tr>
+            <% if (servis_orders.address) { %>
+            <tr>
+              <th>Адрес:</th>
+              <td><%= servis_orders.address %></td>
+            </tr>
+            <% } %>
+          </table>
+        </div>
+
+        <!-- Клиент -->
+        <div class="detail-section">
+          <h2>Клиент</h2>
+          <table class="details-table">
+            <tr>
+              <th>ФИО:</th>
+              <td><%= customer ? customer.FIO : '—' %></td>
+            </tr>
+            <tr>
+              <th>Телефон:</th>
+              <td><%= customer ? customer.phone : '—' %></td>
+            </tr>
+            <tr>
+              <th>Email:</th>
+              <td><%= customer ? customer.email : '—' %></td>
+            </tr>
+          </table>
+        </div>
+
+        <!-- Автомобиль -->
+        <div class="detail-section">
+          <h2>Автомобиль</h2>
+          <% if (car) { %>
+          <table class="details-table">
+            <tr><th>Марка:</th><td><%= car.mark %></td></tr>
+            <tr><th>Модель:</th><td><%= car.model %></td></tr>
+            <tr><th>Год:</th><td><%= car.year %></td></tr>
+            <tr><th>Гос. номер:</th><td><%= car.gos_nomer || '—' %></td></tr>
+            <tr><th>VIN:</th><td><%= car.wincode || '—' %></td></tr>
+          </table>
+          <% } else { %>
+          <p class="no-data">Данные отсутствуют</p>
+          <% } %>
+        </div>
+
+        <!-- Услуги -->
+        <div class="detail-section">
+          <h2>Услуги</h2>
+          <% if (services && services.length > 0) { %>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Услуга</th>
+                <th>Кол-во</th>
+                <th>Цена</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% services.forEach(s => { %>
+              <tr>
+                <td><%= s.servis_name %></td>
+                <td><%= s.quantity %></td>
+                <td><%= s.servis_price %> ₽</td>
+              </tr>
+              <% }) %>
+            </tbody>
+          </table>
+          <% } else { %>
+          <p class="no-data">Услуги не указаны</p>
+          <% } %>
+        </div>
+
+        <!-- Запчасти — полная ширина -->
+        <div class="detail-section full-width-section">
+          <h2>Использованные запчасти</h2>
+          <% if (parts && parts.length > 0) { %>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Название</th>
+                <th>Количество</th>
+                <th>Цена за ед.</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% parts.forEach(p => { %>
+              <tr>
+                <td><%= p.inventory_name %></td>
+                <td><%= p.quantity %></td>
+                <td><%= p.inventory_price %> ₽</td>
+              </tr>
+              <% }) %>
+            </tbody>
+          </table>
+          <% } else { %>
+          <p class="no-data">Запчасти не использовались</p>
+          <% } %>
+        </div>
+
+      </div>
+    </main>
+  </body>
+</html>

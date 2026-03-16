@@ -65,6 +65,9 @@ app.use("/zakaz", zakazRouter);
 const adminRoutes = require("./routes/admin");
 app.use("/admin", adminRoutes);
 
+const masterRouter = require("./routes/master");
+app.use("/master", masterRouter);
+
 const orderDetailsRouter = require("./routes/orders");
 app.use("/order-details", orderDetailsRouter);
 

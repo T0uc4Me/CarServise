@@ -39,14 +39,14 @@ router.get('/', (req, res) => {
     res.render('6regauto', { car: null, error: req.session.error || null, success: req.session.success || null });
 });
 
-// Удаление автомобиля
+// Удаление автомобиля (Soft Delete)
 router.post('/delete/:id', (req, res) => {
     const carId = req.params.id;
     const customerId = req.session.customerId;
 
     if (!customerId) return res.redirect('/auth/login');
 
-    db.run("DELETE FROM Car WHERE car_id = ? AND Customers_customer_id = ?", [carId, customerId], function(err) {
+    db.run("UPDATE Car SET is_deleted = 1 WHERE car_id = ? AND Customers_customer_id = ?", [carId, customerId], function(err) {
         if (err) {
             console.error('Ошибка при удалении автомобиля:', err);
             req.session.error = 'Ошибка при удалении автомобиля.';
