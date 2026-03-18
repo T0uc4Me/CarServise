@@ -145,7 +145,7 @@ router.post("/", async (req, res) => {
             db.run(
               `INSERT INTO Servis_orders 
                    (servis_data, order_status, address, Customers_customer_id, Car_car_id, Employes_employes_id, total_amount) 
-                   VALUES (DATE('now'), 'active', ?, ?, ?, ?, ?)`,
+                   VALUES (DATE('now'), 'В обработке', ?, ?, ?, ?, ?)`,
               [address || "", customerId, carId, activeEmployeeId, totalAmount],
               function (err) {
                 if (err) {

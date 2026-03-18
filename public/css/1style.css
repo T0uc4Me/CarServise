@@ -131,6 +131,17 @@ ul {
   box-shadow: 0 6px 20px rgba(108, 99, 255, 0.4);
 }
 
+/* Global SVG Icon styling */
+.icon {
+  width: 1.2rem;
+  height: 1.2rem;
+  stroke-width: 2;
+  fill: none;
+  stroke: currentColor;
+  display: inline-block;
+  vertical-align: middle;
+}
+
 /* Main Content */
 .hero {
   display: flex;

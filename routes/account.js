@@ -22,7 +22,7 @@ router.get('/', async (req, res) => {
             const fio = `${user.first_name} ${user.last_name}`;
 
             // Получение списка машин пользователя (только не удаленных)
-            db.all('SELECT car_id, mark, model FROM Car WHERE Customers_customer_id = ? AND is_deleted = 0', [userId], (err, cars) => {
+            db.all('SELECT car_id, mark, model, year, gos_nomer, wincode FROM Car WHERE Customers_customer_id = ? AND is_deleted = 0', [userId], (err, cars) => {
                 if (err) {
                     console.error(err);
                     return res.status(500).render('error', { message: 'Ошибка сервера.' });

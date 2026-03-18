@@ -37,8 +37,16 @@
             <tr>
               <th>Статус:</th>
               <td>
-                <span class="status-badge <%= servis_orders.order_status === 'active' ? 'status-active' : 'status-closed' %>">
-                  <%= servis_orders.order_status === 'active' ? 'Активный' : 'Закрыт' %>
+                <% 
+                  let statusClass = 'status-active';
+                  if (servis_orders.order_status === 'Заказ выполнен' || servis_orders.order_status === 'closed') {
+                      statusClass = 'status-closed';
+                  } else if (servis_orders.order_status === 'Заказ отменён') {
+                      statusClass = 'status-danger'; 
+                  }
+                %>
+                <span class="status-badge <%= statusClass %>">
+                  <%= (servis_orders.order_status || 'В обработке') %>
                 </span>
               </td>
             </tr>

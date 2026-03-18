@@ -70,6 +70,14 @@
           display: inline-block;
           box-shadow: 0 0 8px rgba(255, 77, 77, 0.6);
       }
+      .admin-status-text[data-status="Заказ отменён"] { color: #ff4d4d; }
+      .admin-status-text[data-status="Заказ выполнен"] { color: #28a745; }
+      .admin-status-text[data-status="closed"] { color: #28a745; }
+      .admin-status-text:not([data-status="Заказ отменён"]):not([data-status="Заказ выполнен"]):not([data-status="closed"]) { color: #ffae52; }
+      
+      .history-item { opacity: 0.85; position: relative; }
+      .border-cancelled { border-left: 4px solid #ff4d4d !important; }
+      .border-completed { border-left: 4px solid #28a745 !important; }
     </style>
     <title>Администратор</title>
   </head>
@@ -88,6 +96,7 @@
     <main class="admin-main">
       <div class="admin-tabs">
         <button class="tab-btn active" data-tab="orders">Активные заказы</button>
+        <button class="tab-btn" data-tab="history">История заказов</button>
         <button class="tab-btn" data-tab="inventory">Инвентарь</button>
         <button class="tab-btn" data-tab="support">Поддержка</button>
       </div>
@@ -100,7 +109,12 @@
             <li class="order-item">
               <div style="display:flex; flex-direction:column; gap:4px; flex:1;">
                 <span style="font-weight:700;">Заказ #<%= order.order_id %></span>
-                <span style="font-size:0.8rem; color:rgba(255,255,255,0.5);">Статус: <%= order.order_status %></span>
+                <span style="font-size:0.8rem; color:rgba(255,255,255,0.5);">
+                  Статус: 
+                  <span class="admin-status-text" data-status="<%= order.order_status %>">
+                    <%= order.order_status || 'В обработке' %>
+                  </span>
+                </span>
               </div>
               <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
                 <% if (!order.Employes_employes_id) { %>
@@ -118,6 +132,40 @@
               </div>
             </li>
             <% }); %>
+          </ul>
+        </section>
+      </div>
+
+      <div id="history-tab" class="tab-panel">
+        <section class="orders-section">
+          <h2>История заказов</h2>
+          <ul class="orders-list">
+            <% if (typeof historyOrders !== 'undefined' && historyOrders.length > 0) { %>
+              <% historyOrders.forEach(order => { %>
+              <li class="order-item history-item <%= order.order_status === 'Заказ отменён' ? 'border-cancelled' : 'border-completed' %>">
+                <div style="display:flex; flex-direction:column; gap:4px; flex:1;">
+                  <div style="display:flex; align-items:center; gap:10px;">
+                    <span style="font-weight:700;">Заказ #<%= order.order_id %></span>
+                    <span style="font-size:0.75rem; padding:2px 8px; border-radius:4px; background:rgba(255,255,255,0.05);">
+                        <%= order.servis_data %>
+                    </span>
+                  </div>
+                  <span style="font-size:0.8rem; color:rgba(255,255,255,0.5);">
+                    Статус: 
+                    <span class="admin-status-text" data-status="<%= order.order_status %>">
+                      <%= order.order_status === 'closed' ? 'Завершен' : order.order_status %>
+                    </span>
+                  </span>
+                </div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <span style="font-weight:600; color:var(--admin-primary); margin-right:10px;"><%= order.total_amount %> ₽</span>
+                  <a href="/order-details/<%= order.order_id %>" class="view-button">Детали</a>
+                </div>
+              </li>
+              <% }); %>
+            <% } else { %>
+              <li style="padding:20px; text-align:center; color:rgba(255,255,255,0.3);">История пуста</li>
+            <% } %>
           </ul>
         </section>
       </div>
@@ -445,10 +493,13 @@
                             <div class="ticket-user">${escapeHtml(u.first_name + ' ' + u.last_name)}</div>
                             <div class="ticket-preview">${escapeHtml(u.last_message || '...')}</div>
                             ${u.unread_count > 0 ? `<div class="ticket-unread">${u.unread_count}</div>` : ''}
-                            <button class="ticket-delete-btn" data-cid="${u.customer_id}" title="Удалить тикет">🗑️</button>
+                            <button class="ticket-delete-btn" data-cid="${u.customer_id}" title="Удалить тикет">
+                                <svg class="icon" viewBox="0 0 24 24" style="width: 16px; height: 16px;"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                            </button>
                         `;
                         btn.onclick = (e) => {
-                            if (e.target.classList.contains('ticket-delete-btn')) {
+                            const deleteBtn = e.target.closest('.ticket-delete-btn');
+                            if (deleteBtn) {
                                 deleteTicket(u.customer_id);
                             } else {
                                 openTicketWindow(u);
@@ -474,7 +525,7 @@
                         <div class="chat-win-title">Тикет: ${escapeHtml(user.first_name + ' ' + user.last_name)}</div>
                         <div class="chat-win-subtitle">${user.phone || ''} | ${user.email || ''}</div>
                     </div>
-                    <button type="button" class="chat-win-close" title="Закрыть">&times;</button>
+                    <button type="button" class="chat-win-close" title="Закрыть" aria-label="Close">&times;</button>
                 </div>
                 <div class="chat-win-messages"></div>
                 <div class="chat-win-input-area">
@@ -492,13 +543,15 @@
             openTickets.set(cid, ticketData);
 
             const closeBtn = win.querySelector('.chat-win-close');
-            closeBtn.onclick = () => {
+            closeBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
                 win.classList.add('closing');
                 setTimeout(() => {
                     win.remove();
                     openTickets.delete(cid);
-                }, 200);
-            };
+                }, 300);
+            });
 
             btn.onclick = () => sendMessage(cid, input, ticketData);
             input.onkeydown = (e) => { if(e.key === 'Enter') sendMessage(cid, input, ticketData); };

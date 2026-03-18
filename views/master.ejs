@@ -4,6 +4,37 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/css/master.css" />
+    <style>
+      .tabs-container {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 25px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding-bottom: 15px;
+      }
+      .tab-btn {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.6);
+        padding: 10px 20px;
+        border-radius: 12px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.3s ease;
+      }
+      .tab-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+      }
+      .tab-btn.active {
+        background: #ffae52;
+        color: #000;
+        border-color: #ffae52;
+      }
+      .order-card.hidden {
+        display: none;
+      }
+    </style>
     <title>Кабинет мастера</title>
   </head>
   <body>
@@ -71,7 +102,7 @@
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
           </div>
           <div>
-            <div class="stat-value"><%= orders.filter(o => o.order_status === 'active').length %></div>
+            <div class="stat-value"><%= orders.filter(o => ['В обработке', 'Мастер выехал'].includes(o.order_status)).length %></div>
             <div class="stat-label">В работе</div>
           </div>
         </div>
@@ -80,7 +111,7 @@
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
           </div>
           <div>
-            <div class="stat-value"><%= orders.filter(o => o.order_status !== 'active').length %></div>
+            <div class="stat-value"><%= orders.filter(o => !['В обработке', 'Мастер выехал'].includes(o.order_status)).length %></div>
             <div class="stat-label">Завершено</div>
           </div>
         </div>
@@ -88,7 +119,13 @@
 
       <!-- Список заказов -->
       <div class="section-header">
-        <h2>Назначенные заказы</h2>
+        <h2>Задания</h2>
+      </div>
+
+      <div class="tabs-container">
+        <button class="tab-btn active" data-tab="active">В работе</button>
+        <button class="tab-btn" data-tab="history">Выполненные/Отменённые</button>
+        <button class="tab-btn" data-tab="all">Все</button>
       </div>
 
       <% if (orders.length === 0) { %>
@@ -100,14 +137,19 @@
           <p>На данный момент у вас нет назначенных заданий</p>
         </div>
       <% } else { %>
-        <div class="orders-grid">
+        <div class="orders-grid" id="ordersGrid">
           <% orders.forEach(order => { %>
-          <div class="order-card">
+          <div class="order-card" data-status="<%= order.order_status %>">
             <div class="order-card-head">
               <div class="order-id">Заказ <span>#<%= order.order_id %></span></div>
-              <span class="status-badge <%= order.order_status === 'active' ? 'status-active' : 'status-closed' %>">
-                <%= order.order_status === 'active' ? 'Активный' : 'Закрыт' %>
-              </span>
+              <div class="status-control">
+                <select class="status-select" data-order-id="<%= order.order_id %>">
+                  <option value="В обработке" <%= order.order_status === 'В обработке' ? 'selected' : '' %>>В обработке</option>
+                  <option value="Мастер выехал" <%= order.order_status === 'Мастер выехал' ? 'selected' : '' %>>Мастер выехал</option>
+                  <option value="Заказ отменён" <%= order.order_status === 'Заказ отменён' ? 'selected' : '' %>>Заказ отменён</option>
+                  <option value="Заказ выполнен" <%= order.order_status === 'Заказ выполнен' ? 'selected' : '' %>>Заказ выполнен</option>
+                </select>
+              </div>
             </div>
 
             <div class="order-info-row">
@@ -182,6 +224,89 @@
           alert('Произошла ошибка при сохранении');
         }
       };
+
+      // Status Change Logic
+      document.querySelectorAll('.status-select').forEach(select => {
+        let previousValue = select.value;
+        
+        select.addEventListener('focus', () => {
+          previousValue = select.value;
+        });
+
+        select.addEventListener('change', async () => {
+          const orderId = select.getAttribute('data-order-id');
+          const newStatus = select.value;
+          
+          // Confirmations
+          if (newStatus === 'Заказ выполнен') {
+            if (!confirm('Заказ выполнен?')) {
+              select.value = previousValue;
+              return;
+            }
+          } else if (newStatus === 'Заказ отменён') {
+            if (!confirm('Вы уверены, что хотите отменить заказ?')) {
+              select.value = previousValue;
+              return;
+            }
+          }
+
+          try {
+            const res = await fetch(`/master/order/${orderId}/status`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ status: newStatus })
+            });
+            
+            if (res.ok) {
+              console.log('Статус обновлен');
+              previousValue = newStatus;
+              // If status is final, maybe move to history or reload
+              if (['Заказ выполнен', 'Заказ отменён'].includes(newStatus)) {
+                window.location.reload(); 
+              }
+            } else {
+              alert('Ошибка при обновлении статуса');
+              window.location.reload();
+            }
+          } catch (err) {
+            console.error(err);
+            alert('Ошибка сервера');
+            select.value = previousValue;
+          }
+        });
+      });
+
+      // Tab Filtering Logic
+      const tabBtns = document.querySelectorAll('.tab-btn');
+      const orderCards = document.querySelectorAll('.order-card');
+
+      function filterOrders(tab) {
+        orderCards.forEach(card => {
+          const status = card.getAttribute('data-status');
+          const isHistory = ['Заказ выполнен', 'Заказ отменён', 'closed'].includes(status);
+          
+          if (tab === 'all') {
+            card.classList.remove('hidden');
+          } else if (tab === 'history') {
+            if (isHistory) card.classList.remove('hidden');
+            else card.classList.add('hidden');
+          } else { // active
+            if (!isHistory) card.classList.remove('hidden');
+            else card.classList.add('hidden');
+          }
+        });
+      }
+
+      tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          tabBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          filterOrders(btn.getAttribute('data-tab'));
+        });
+      });
+
+      // Initial filter
+      filterOrders('active');
     </script>
   </body>
 </html>

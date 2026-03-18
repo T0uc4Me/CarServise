@@ -19,23 +19,33 @@ function checkAdminRole(req, res, next) {
 // Главная страница админ-панели
 router.get("/", checkAdminRole, async (req, res) => {
   try {
-    // Получаем активные заказы
-    db.all("SELECT * FROM servis_orders WHERE order_status = 'active'", [], (err, activeOrders) => {
+    // Получаем активные заказы (те, что еще не закрыты, не выполнены и не отменены)
+    db.all("SELECT * FROM servis_orders WHERE order_status NOT IN ('closed', 'Заказ выполнен', 'Заказ отменён') OR order_status IS NULL", [], (err, activeOrders) => {
       if (err) {
         console.error(err);
         return res.status(500).send("Ошибка сервера");
       }
-      // Получаем инвентарь
-      db.all("SELECT * FROM inventory", [], (err, inventory) => {
+      
+      // Получаем историю заказов (завершенные, выполненные и отмененные)
+      db.all("SELECT * FROM servis_orders WHERE order_status IN ('closed', 'Заказ выполнен', 'Заказ отменён') ORDER BY order_id DESC", [], (err, historyOrders) => {
         if (err) {
           console.error(err);
           return res.status(500).send("Ошибка сервера");
         }
-        res.render("admin", {
-          activeOrders,
-          inventory,
-          userRole: req.session.adminRole,
-          userId: req.session.adminId,
+
+        // Получаем инвентарь
+        db.all("SELECT * FROM inventory", [], (err, inventory) => {
+          if (err) {
+            console.error(err);
+            return res.status(500).send("Ошибка сервера");
+          }
+          res.render("admin", {
+            activeOrders,
+            historyOrders,
+            inventory,
+            userRole: req.session.adminRole,
+            userId: req.session.adminId,
+          });
         });
       });
     });

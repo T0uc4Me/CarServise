@@ -86,7 +86,16 @@ router.get("/:id", async (req, res) => {
                     });
 
                     // Определяем, какой шаблон рендерить
-                    const viewName = (req.session.adminId || req.session.masterId) ? "order-details" : "customer-order-details";
+                    // Если пользователь одновременно админ/мастер НО является владельцем этого заказа — показываем клиентский вид
+                    let viewName = (req.session.adminId || req.session.masterId) ? "order-details" : "customer-order-details";
+                    
+                    if (req.session.customerId && servis_orders.Customers_customer_id === req.session.customerId) {
+                        // Если зашли со страницы личного кабинета или мы владельцы - показываем клиентскую версию
+                        const referer = req.get('Referer') || '';
+                        if (!referer.includes('/admin') && !referer.includes('/master')) {
+                            viewName = "customer-order-details";
+                        }
+                    }
 
                     res.render(viewName, {
                       servis_orders: servis_orders || {},

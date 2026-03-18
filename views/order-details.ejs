@@ -80,9 +80,16 @@
                     <tr>
                         <td>Текущий статус</td>
                         <td>
-                            <span
-                                class="status-badge <%= servis_orders.order_status === 'active' ? 'status-active' : 'status-completed' %>">
-                                <%= servis_orders.order_status || 'Обработка' %>
+                            <% 
+                                let statusClass = 'status-active';
+                                if (servis_orders.order_status === 'Заказ выполнен' || servis_orders.order_status === 'closed') {
+                                    statusClass = 'status-completed';
+                                } else if (servis_orders.order_status === 'Заказ отменён') {
+                                    statusClass = 'status-cancelled';
+                                }
+                            %>
+                            <span class="status-badge <%= statusClass %>">
+                                <%= (servis_orders.order_status || 'В обработке') %>
                             </span>
                         </td>
                     </tr>

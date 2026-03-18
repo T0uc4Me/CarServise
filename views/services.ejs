@@ -128,18 +128,12 @@
             border-top: 1px solid var(--glass-border);
         }
 
-        .service-img-wrapper {
-            cursor: pointer;
-            position: relative;
-        }
-
         .service-img-wrapper::after {
-            content: '🔍';
+            content: '';
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) scale(0);
-            font-size: 2rem;
             transition: var(--transition);
             background: rgba(108, 99, 255, 0.4);
             width: 100%;
@@ -148,6 +142,20 @@
             align-items: center;
             justify-content: center;
             backdrop-filter: blur(4px);
+        }
+
+        .service-img-wrapper .hover-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            transition: var(--transition);
+            color: white;
+            z-index: 2;
+        }
+
+        .service-img-wrapper:hover .hover-icon {
+            transform: translate(-50%, -50%) scale(1);
         }
 
         .service-img-wrapper:hover::after {
@@ -235,6 +243,9 @@
                             else if (service.servis_name.toLowerCase().includes("диагностика")) imgSrc = "/img/diagnostics.jpg";
                         %>
                         <img src="<%= imgSrc %>" alt="<%= service.servis_name %>">
+                        <div class="hover-icon">
+                            <svg class="icon" style="width: 48px; height: 48px;" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                        </div>
                     </div>
                     <div class="service-body">
                         <div class="service-header-row">

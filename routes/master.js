@@ -240,4 +240,27 @@ router.post("/order/:id/add-parts", checkMasterRole, async (req, res) => {
   }
 });
 
+// POST /master/order/:id/status — обновление статуса заказа мастером
+router.post("/order/:id/status", checkMasterRole, (req, res) => {
+  const orderId = req.params.id;
+  const { status } = req.body;
+  const validStatuses = ["В обработке", "Мастер выехал", "Заказ отменён", "Заказ выполнен", "Закрыто"];
+
+  if (!status) {
+    return res.status(400).json({ error: "Статус не указан" });
+  }
+
+  db.run(
+    "UPDATE Servis_orders SET order_status = ? WHERE order_id = ?",
+    [status, orderId],
+    function(err) {
+      if (err) {
+        console.error("Ошибка обновления статуса:", err);
+        return res.status(500).json({ error: "Ошибка сервера" });
+      }
+      res.json({ ok: true });
+    }
+  );
+});
+
 module.exports = router;

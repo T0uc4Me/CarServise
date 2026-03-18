@@ -55,6 +55,12 @@
             border: 1px solid rgba(40, 167, 69, 0.3);
         }
 
+        .status-pill.danger {
+            background: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+            border: 1px solid rgba(220, 53, 69, 0.3);
+        }
+
         .info-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -195,8 +201,11 @@
                     <h1 class="order-id">Заказ #<%= servis_orders.order_id %></h1>
                     <p style="color: var(--text-muted); margin-top: 10px;">Оформлен: <%= servis_orders.servis_data %></p>
                 </div>
-                <div class="status-pill <%= servis_orders.order_status === 'active' ? 'active' : 'closed' %>">
-                    <%= servis_orders.order_status === 'active' ? 'В работе' : 'Завершен' %>
+                <div class="status-pill <%= 
+                    (servis_orders.order_status === 'Заказ выполнен' || servis_orders.order_status === 'closed') ? 'closed' : 
+                    (servis_orders.order_status === 'Заказ отменён' ? 'danger' : 'active') 
+                %>">
+                    <%= servis_orders.order_status || 'В обработке' %>
                 </div>
             </div>
 
