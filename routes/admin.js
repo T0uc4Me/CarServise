@@ -47,7 +47,9 @@ router.get("/", checkAdminRole, async (req, res) => {
 
 // Маршрут для страницы входа
 router.get("/login", (req, res) => {
-  res.render("admin-login");
+  const error = req.session.staffLoginError;
+  delete req.session.staffLoginError;
+  res.render("staff-login", { error });
 });
 
 // Обработка входа
@@ -55,38 +57,42 @@ router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    db.all("SELECT * FROM Employes WHERE email = ?", [email], async (err, users) => {
+    db.get("SELECT * FROM Employes WHERE email = ?", [email], async (err, user) => {
       if (err) {
         console.error(err);
-        return res.status(500).send("Ошибка сервера");
+        req.session.staffLoginError = "Ошибка сервера";
+        return res.redirect("/admin/login");
       }
 
-      if (users.length === 0) {
-        return res.status(401).send("Неверный email или пароль");
+      if (!user) {
+        req.session.staffLoginError = "Неверный email или пароль";
+        return res.redirect("/admin/login");
       }
 
-      const user = users[0];
       const validPassword = await bcrypt.compare(password, user.password);
 
       if (!validPassword) {
-        return res.status(401).send("Неверный email или пароль");
+        req.session.staffLoginError = "Неверный email или пароль";
+        return res.redirect("/admin/login");
       }
 
       if (user.role === "admin") {
         req.session.adminId = user.employes_id;
         req.session.adminRole = user.role;
         res.redirect("/admin");
-      } else if (user.role === "master") {
+      } else if (user.role === "master" || user.role === "mechanic" || user.role === "Механик") {
         req.session.masterId = user.employes_id;
-        req.session.masterRole = user.role;
-        res.redirect("/master"); // Мастер попадает на свою страницу
+        req.session.masterRole = "master"; // Синхронизируем роль для middleware
+        res.redirect("/master");
       } else {
-        res.redirect("/");  // Для пользователей с другой ролью перенаправляем на домашнюю страницу
+        req.session.staffLoginError = "У вас нет доступа к этой панели";
+        res.redirect("/admin/login");
       }
     });
   } catch (error) {
     console.error(error);
-    res.status(500).send("Ошибка сервера");
+    req.session.staffLoginError = "Ошибка сервера";
+    res.redirect("/admin/login");
   }
 });
 
@@ -176,7 +182,7 @@ router.get("/logout", (req, res) => {
 
 // GET /admin/masters — список мастеров (JSON, для dropdown в панели)
 router.get("/masters", checkAdminRole, (req, res) => {
-  db.all("SELECT employes_id, first_name, last_name FROM Employes WHERE role = 'master'", [], (err, masters) => {
+  db.all("SELECT employes_id, first_name, last_name, role FROM Employes WHERE role IN ('master', 'mechanic', 'Механик')", [], (err, masters) => {
     if (err) {
       console.error(err);
       return res.status(500).json({ error: "Ошибка сервера" });
@@ -208,6 +214,32 @@ router.put("/assign-master/:orderId", checkAdminRole, (req, res) => {
       res.status(200).json({ ok: true });
     }
   );
+});
+
+// PUT /admin/update-inventory/:originalId — обновление инвентаря (включая имя и ID)
+router.put("/update-inventory/:originalId", checkAdminRole, (req, res) => {
+  const { originalId } = req.params;
+  const { newId, inventory_name, quantity_in_stock, inventory_price, inventory_discription } = req.body;
+
+  db.serialize(() => {
+    // Включаем поддержку foreign_keys (чтобы на всякий случай не сломать, если не нужно)
+    // Но для изменения PK с зависимыми записями без CASCADE может быть блокировка.
+    // Если пользователь решил менять ID, предполагаем он понимает последствия или это новая запись.
+    db.run("PRAGMA foreign_keys = OFF", (err) => {
+      db.run(
+        "UPDATE Inventory SET inventory_id = ?, inventory_name = ?, quantity_in_stock = ?, inventory_price = ?, inventory_discription = ? WHERE inventory_id = ?",
+        [newId || originalId, inventory_name, quantity_in_stock, inventory_price, inventory_discription, originalId],
+        function(updateErr) {
+          db.run("PRAGMA foreign_keys = ON");
+          if (updateErr) {
+            console.error(updateErr);
+            return res.status(500).json({ error: "Ошибка сервера" });
+          }
+          res.json({ ok: true });
+        }
+      );
+    });
+  });
 });
 
 module.exports = router;

@@ -10,42 +10,78 @@
     <header>
       <div class="header-container">
         <div class="header-logo">
-          <div class="header-logo-icon">🔧</div>
+          <div class="header-logo-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+          </div>
           <div>
-            <div class="header-title">Кабинет мастера</div>
+            <div class="header-title">Панель мастера</div>
             <div class="header-subtitle"><%= master.first_name %> <%= master.last_name %></div>
           </div>
         </div>
         <div class="user-controls">
-          <span class="user-badge">🛠 Мастер</span>
+          <div class="role-badge-container">
+            <span class="role-label">Роль:</span>
+            <span class="user-badge"><%= master.role %></span>
+          </div>
+          <button id="editProfileBtn" class="edit-btn">Профиль</button>
           <a href="/master/logout" class="logout-btn">Выйти</a>
         </div>
       </div>
     </header>
 
     <main class="master-main">
+      <!-- Модальное окно редактирования профиля -->
+      <div id="profileModal" class="modal" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.8); backdrop-filter:blur(5px);">
+        <div class="modal-content" style="background:#1a1926; margin:10% auto; padding:30px; border:1px solid rgba(255,255,255,0.1); width:90%; max-width:400px; border-radius:20px; box-shadow:0 20px 40px rgba(0,0,0,0.4);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h2 style="margin:0;">Профиль</h2>
+            <span class="close-modal" style="cursor:pointer; font-size:1.5rem; opacity:0.6;">&times;</span>
+          </div>
+          <form id="profileForm" style="display:flex; flex-direction:column; gap:15px;">
+            <div style="display:flex; flex-direction:column; gap:5px;">
+              <label style="font-size:0.8rem; color:rgba(255,255,255,0.5);">Имя</label>
+              <input type="text" name="first_name" value="<%= master.first_name %>" required style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#fff; padding:10px; border-radius:10px; outline:none;">
+            </div>
+            <div style="display:flex; flex-direction:column; gap:5px;">
+              <label style="font-size:0.8rem; color:rgba(255,255,255,0.5);">Фамилия</label>
+              <input type="text" name="last_name" value="<%= master.last_name %>" required style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#fff; padding:10px; border-radius:10px; outline:none;">
+            </div>
+            <div style="display:flex; flex-direction:column; gap:5px;">
+              <label style="font-size:0.8rem; color:rgba(255,255,255,0.5);">Телефон</label>
+              <input type="tel" name="phone" value="<%= master.phone || '' %>" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#fff; padding:10px; border-radius:10px; outline:none;">
+            </div>
+            <button type="submit" style="background:#ffae52; color:#000; border:none; padding:12px; border-radius:12px; font-weight:bold; cursor:pointer; margin-top:10px; transition:all 0.3s ease;">Сохранить изменения</button>
+          </form>
+        </div>
+      </div>
 
       <!-- Статистика -->
       <div class="stats-row">
         <div class="stat-card">
-          <div class="stat-icon">📋</div>
+          <div class="stat-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          </div>
           <div>
             <div class="stat-value"><%= orders.length %></div>
             <div class="stat-label">Всего заказов</div>
           </div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon">⚡</div>
+          <div class="stat-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
+          </div>
           <div>
             <div class="stat-value"><%= orders.filter(o => o.order_status === 'active').length %></div>
-            <div class="stat-label">Активных</div>
+            <div class="stat-label">В работе</div>
           </div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon">✅</div>
+          <div class="stat-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+          </div>
           <div>
             <div class="stat-value"><%= orders.filter(o => o.order_status !== 'active').length %></div>
-            <div class="stat-label">Завершённых</div>
+            <div class="stat-label">Завершено</div>
           </div>
         </div>
       </div>
@@ -57,9 +93,11 @@
 
       <% if (orders.length === 0) { %>
         <div class="empty-state">
-          <div class="empty-state-icon">📭</div>
-          <h3>Заказов пока нет</h3>
-          <p>Администратор ещё не назначил вам заказы</p>
+          <div class="empty-state-icon">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+          </div>
+          <h3>Список заказов пуст</h3>
+          <p>На данный момент у вас нет назначенных заданий</p>
         </div>
       <% } else { %>
         <div class="orders-grid">
@@ -74,29 +112,24 @@
 
             <div class="order-info-row">
               <div class="order-info-item">
-                <span class="info-icon">👤</span>
-                <span class="info-label">Клиент</span>
+                <span class="info-label">Клиент:</span>
                 <span class="info-value"><%= order.first_name %> <%= order.last_name %></span>
               </div>
               <div class="order-info-item">
-                <span class="info-icon">📞</span>
-                <span class="info-label">Телефон</span>
+                <span class="info-label">Телефон:</span>
                 <span class="info-value"><%= order.phone || '—' %></span>
               </div>
               <div class="order-info-item">
-                <span class="info-icon">🚗</span>
-                <span class="info-label">Авто</span>
+                <span class="info-label">Авто:</span>
                 <span class="info-value"><%= order.mark %> <%= order.model %> (<%= order.year %>)</span>
               </div>
               <div class="order-info-item">
-                <span class="info-icon">📅</span>
-                <span class="info-label">Дата</span>
+                <span class="info-label">Дата:</span>
                 <span class="info-value"><%= order.servis_data %></span>
               </div>
               <% if (order.address) { %>
               <div class="order-info-item">
-                <span class="info-icon">📍</span>
-                <span class="info-label">Адрес</span>
+                <span class="info-label">Адрес:</span>
                 <span class="info-value"><%= order.address %></span>
               </div>
               <% } %>
@@ -115,5 +148,40 @@
         </div>
       <% } %>
     </main>
+
+    <script>
+      const modal = document.getElementById('profileModal');
+      const btn = document.getElementById('editProfileBtn');
+      const span = document.getElementsByClassName('close-modal')[0];
+      const form = document.getElementById('profileForm');
+
+      btn.onclick = () => { modal.style.display = 'block'; };
+      span.onclick = () => { modal.style.display = 'none'; };
+      window.onclick = (e) => { if (e.target == modal) modal.style.display = 'none'; };
+
+      form.onsubmit = async (e) => {
+        e.preventDefault();
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+
+        try {
+          const res = await fetch('/master/update-profile', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+          });
+          if (res.ok) {
+            alert('Профиль успешно обновлен!');
+            window.location.reload();
+          } else {
+            const err = await res.json();
+            alert('Ошибка: ' + (err.error || 'Не удалось обновить профиль'));
+          }
+        } catch (err) {
+          console.error(err);
+          alert('Произошла ошибка при сохранении');
+        }
+      };
+    </script>
   </body>
 </html>

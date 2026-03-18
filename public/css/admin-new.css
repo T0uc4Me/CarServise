@@ -577,3 +577,92 @@ section h2::before {
         grid-template-columns: 1fr;
     }
 }
+
+/* Editable Items and Description Modal */
+.editable-cell {
+    position: relative;
+    cursor: pointer;
+    padding: 6px 10px !important;
+    border-radius: 8px;
+    transition: var(--transition);
+    border: 1px solid transparent;
+}
+
+.editable-cell:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.editable-input {
+    background: #0f111a;
+    border: 1.5px solid var(--admin-primary);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 8px;
+    width: 80px;
+    font-size: 0.88rem;
+    outline: none;
+    box-shadow: 0 0 10px rgba(108, 99, 255, 0.2);
+}
+
+.desc-button {
+    background: rgba(0, 242, 254, 0.1);
+    color: var(--admin-accent);
+    border: 1px solid rgba(0, 242, 254, 0.2);
+    padding: 6px 14px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+    margin-right: 8px;
+}
+
+.desc-button:hover {
+    background: var(--admin-accent);
+    color: #0a0b10;
+    box-shadow: 0 0 15px rgba(0, 242, 254, 0.3);
+}
+
+#description-popup .popup-content {
+    width: 600px;
+    max-width: 90%;
+}
+
+.popup-textarea {
+    width: 100%;
+    height: 180px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--admin-border);
+    border-radius: 16px;
+    padding: 18px;
+    color: white;
+    font-family: var(--font-main);
+    font-size: 0.95rem;
+    resize: vertical;
+    outline: none;
+    transition: var(--transition);
+    margin-bottom: 20px;
+}
+
+.popup-textarea:focus {
+    border-color: var(--admin-primary);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.save-desc-btn {
+    background: linear-gradient(135deg, var(--admin-primary), var(--admin-accent));
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+    width: 100%;
+}
+
+.save-desc-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(108, 99, 255, 0.4);
+}

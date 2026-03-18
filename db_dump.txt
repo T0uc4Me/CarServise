@@ -1,0 +1,124 @@
+SERVICES:
+[
+  {
+    "servis_id": 9,
+    "servis_name": "Шиномонтаж",
+    "servis_type": "Ремонт",
+    "servis_price": "3000"
+  },
+  {
+    "servis_id": 10,
+    "servis_name": "Диагностика двигателя",
+    "servis_type": "Диагностика",
+    "servis_price": "1500"
+  },
+  {
+    "servis_id": 11,
+    "servis_name": "Замена тормозных колодок",
+    "servis_type": "Ремонт",
+    "servis_price": "3500"
+  },
+  {
+    "servis_id": 12,
+    "servis_name": "Проверка уровня жидкостей",
+    "servis_type": "ТО",
+    "servis_price": "500"
+  },
+  {
+    "servis_id": 14,
+    "servis_name": "Заправка кондиционера",
+    "servis_type": "Жидкости",
+    "servis_price": "2500"
+  },
+  {
+    "servis_id": 15,
+    "servis_name": "Заправка АИ-92",
+    "servis_type": "Заправка",
+    "servis_price": "52"
+  },
+  {
+    "servis_id": 16,
+    "servis_name": "Заправка АИ-95",
+    "servis_type": "Заправка",
+    "servis_price": "58"
+  },
+  {
+    "servis_id": 17,
+    "servis_name": "Заправка АИ-100",
+    "servis_type": "Заправка",
+    "servis_price": "72"
+  },
+  {
+    "servis_id": 18,
+    "servis_name": "Заправка ДТ",
+    "servis_type": "Заправка",
+    "servis_price": "64"
+  },
+  {
+    "servis_id": 19,
+    "servis_name": "Ремонт ключа зажигания",
+    "servis_type": "Ремонт",
+    "servis_price": "1200"
+  },
+  {
+    "servis_id": 20,
+    "servis_name": "Замена фильтров",
+    "servis_type": "ТО",
+    "servis_price": "800"
+  },
+  {
+    "servis_id": 21,
+    "servis_name": "Замена свечей",
+    "servis_type": "ТО",
+    "servis_price": "1500"
+  },
+  {
+    "servis_id": 22,
+    "servis_name": "Детейлинг салона",
+    "servis_type": "Обслуживание",
+    "servis_price": "5000"
+  },
+  {
+    "servis_id": 23,
+    "servis_name": "Замена аккумулятора",
+    "servis_type": "Ремонт",
+    "servis_price": "500"
+  },
+  {
+    "servis_id": 24,
+    "servis_name": "Компьютерная диагностика",
+    "servis_type": "Диагностика",
+    "servis_price": "1500"
+  },
+  {
+    "servis_id": 25,
+    "servis_name": "Доливка антифриза",
+    "servis_type": "Жидкости",
+    "servis_price": "500"
+  },
+  {
+    "servis_id": 26,
+    "servis_name": "Жидкость для омывания",
+    "servis_type": "Жидкости",
+    "servis_price": "80"
+  }
+]
+INVENTORY:
+[
+  {
+    "inventory_id": 5,
+    "inventory_name": "Масляный фильтр",
+    "inventory_discription": "Фильтр для двигателя",
+    "quantity_in_stock": "100",
+    "inventory_price": "800",
+    "Employes_employes_id": null
+  },
+  {
+    "inventory_id": 6,
+    "inventory_name": "Комплект шин",
+    "inventory_discription": "Летние шины R16",
+    "quantity_in_stock": "50",
+    "inventory_price": "20000",
+    "Employes_employes_id": null
+  }
+]

@@ -45,8 +45,16 @@ router.get("/", async (req, res) => {
                 .render("error", { message: "Ошибка сервера." });
             }
 
-            // Рендерим страницу, передавая имя пользователя, автомобили и услуги
-            res.render("9pd", { fio: userName, cars, services });
+            // Получение инвентаря для поп-апа
+            db.all("SELECT inventory_name, inventory_discription, inventory_price FROM Inventory", [], (err, inventory) => {
+              if (err) {
+                console.error(err);
+                // Если инвентарь не загрузился, всё равно рендерим страницу, но с пустым списком
+                return res.render("9pd", { fio: userName, cars, services, inventory: [] });
+              }
+              // Рендерим страницу, передавая имя пользователя, автомобили, услуги и инвентарь
+              res.render("9pd", { fio: userName, cars, services, inventory });
+            });
           });
         }
       );
@@ -218,12 +226,15 @@ router.post("/", async (req, res) => {
                                 });
                               }
 
+                            db.all("SELECT inventory_name, inventory_discription, inventory_price FROM Inventory", [], (err, inventory) => {
                               res.render("9pd", {
                                 fio: userName,
                                 cars,
                                 services: servicesList,
+                                inventory: inventory || [],
                                 successMessage: "Ваш заказ успешно оформлен!",
                               });
+                            });
                             });
                           });
                         });

@@ -287,6 +287,7 @@
                                         <th>Дата</th>
                                         <th>Сумма</th>
                                         <th>Статус</th>
+                                        <th>Просмотреть</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -299,6 +300,9 @@
                                             <span class="status-badge <%= order.order_status === 'active' ? 'status-active' : 'status-closed' %>">
                                                 <%= order.order_status === 'active' ? 'В работе' : 'Завершен' %>
                                             </span>
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <a href="/order-details/<%= order.order_id %>" class="order-view-link" title="Просмотреть">🔎</a>
                                         </td>
                                     </tr>
                                     <% }); %>
@@ -401,6 +405,32 @@
             color: #28a745;
             border: 1px solid rgba(40, 167, 69, 0.3);
         }
+
+        .order-view-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: 1.2rem;
+            transition: var(--transition);
+        }
+
+        .order-view-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.1);
+            border-color: var(--accent-color);
+        }
+
+        .orders-table th:nth-child(1) { width: 100px; }
+        .orders-table th:nth-child(2) { width: 150px; }
+        .orders-table th:nth-child(3) { width: 130px; }
+        .orders-table th:nth-child(4) { width: 150px; }
+        .orders-table th:nth-child(5) { width: 100px; text-align: center; }
 
         .empty-history {
             text-align: center;

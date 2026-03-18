@@ -47,6 +47,29 @@
       .admin-main {
         grid-template-columns: 1fr;
       }
+      .master-option {
+          background-color: #1a1a2e !important;
+          color: #ffffff !important;
+      }
+      select.master-select {
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid rgba(255, 255, 255, 0.15);
+          color: #fff;
+          border-radius: 10px;
+          padding: 8px 12px;
+          font-size: 0.82rem;
+          cursor: pointer;
+          outline: none;
+          min-width: 180px;
+      }
+      .unassigned-dot {
+          width: 8px;
+          height: 8px;
+          background-color: #ff4d4d;
+          border-radius: 50%;
+          display: inline-block;
+          box-shadow: 0 0 8px rgba(255, 77, 77, 0.6);
+      }
     </style>
     <title>Администратор</title>
   </head>
@@ -80,11 +103,12 @@
                 <span style="font-size:0.8rem; color:rgba(255,255,255,0.5);">Статус: <%= order.order_status %></span>
               </div>
               <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                <% if (!order.Employes_employes_id) { %>
+                    <span class="unassigned-dot" title="Мастер не назначен"></span>
+                <% } %>
                 <!-- Dropdown назначения мастера -->
-                <select class="master-select" data-order-id="<%= order.order_id %>"
-                        style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.15);color:#fff;
-                               border-radius:10px;padding:8px 12px;font-size:0.82rem;cursor:pointer;outline:none;">
-                  <option value="">— Назначить мастера —</option>
+                <select class="master-select" data-order-id="<%= order.order_id %>" data-current-master="<%= order.Employes_employes_id %>">
+                  <option value="" class="master-option">— Назначить мастера —</option>
                 </select>
                 <button class="assign-master-button view-button" data-order-id="<%= order.order_id %>">
                   Назначить
@@ -113,12 +137,23 @@
             </thead>
             <tbody>
               <% inventory.forEach(item => { %>
-              <tr>
-                <td><%= item.inventory_id %></td>
-                <td><%= item.inventory_name %></td>
-                <td><%= item.quantity_in_stock %></td>
-                <td><%= item.inventory_price %> ₽</td>
-                <td>
+              <tr data-id="<%= item.inventory_id %>">
+                <td class="editable-cell" data-field="inventory_id">
+                    <span class="cell-value text-muted" style="font-weight: 700;"><%= item.inventory_id %></span>
+                </td>
+                <td class="editable-cell" data-field="inventory_name">
+                    <span class="cell-value"><%= item.inventory_name %></span>
+                </td>
+                <td class="editable-cell" data-field="quantity_in_stock">
+                    <span class="cell-value"><%= item.quantity_in_stock %></span>
+                </td>
+                <td class="editable-cell" data-field="inventory_price">
+                    <span class="cell-value"><%= item.inventory_price %></span> ₽
+                </td>
+                <td style="white-space: nowrap;">
+                  <button class="desc-button" data-id="<%= item.inventory_id %>" data-desc="<%= item.inventory_discription || '' %>">
+                    Описание
+                  </button>
                   <button
                     class="delete-item-button"
                     data-inventory-id="<%= item.inventory_id %>"
@@ -148,7 +183,6 @@
     <div class="admin-chat-windows-container" id="adminChatWindows"></div>
 
     <div id="add-item-popup" class="popup">
-      <!-- ... (popup content already recovered previously) ... -->
       <div class="popup-content">
         <div class="popup-content__header">
           <span class="close">&times;</span>
@@ -167,10 +201,23 @@
       </div>
     </div>
 
-    <script>
-      // ===== EXISTING ADMIN SCRIPTS =====
-      const deleteItemButtons = document.querySelectorAll(".delete-item-button");
+    <!-- Popup для редактирования описания -->
+    <div id="description-popup" class="popup">
+      <div class="popup-content">
+        <div class="popup-content__header">
+          <span class="close-desc" style="position: absolute; top: 25px; right: 30px; font-size: 2rem; color: var(--admin-text-muted); cursor: pointer;">&times;</span>
+          <h2>Описание товара</h2>
+        </div>
+        <div style="margin-top: 20px;">
+          <textarea id="edit-description-text" class="popup-textarea" placeholder="Введите описание товара..."></textarea>
+          <button id="save-description-btn" class="save-desc-btn">Сохранить описание</button>
+        </div>
+      </div>
+    </div>
 
+    <script>
+      // ===== 1. EXISTING ADMIN SCRIPTS (Delete, Close Order, Add Item) =====
+      const deleteItemButtons = document.querySelectorAll(".delete-item-button");
       deleteItemButtons.forEach(button => {
         button.addEventListener("click", async event => {
           const inventoryId = button.getAttribute("data-inventory-id");
@@ -185,12 +232,11 @@
         });
       });
 
-      const popup = document.getElementById("add-item-popup");
-      const btn   = document.getElementById("add-item-button");
-      const span  = document.getElementsByClassName("close")[0];
-      btn.onclick  = () => { popup.style.display = "block"; };
-      span.onclick = () => { popup.style.display = "none"; };
-      window.onclick = event => { if (event.target == popup) popup.style.display = "none"; };
+      const addItemPopup = document.getElementById("add-item-popup");
+      const addItemBtn = document.getElementById("add-item-button");
+      const closeAddItem = document.querySelector("#add-item-popup .close");
+      addItemBtn.onclick = () => { addItemPopup.style.display = "block"; };
+      closeAddItem.onclick = () => { addItemPopup.style.display = "none"; };
 
       const closeOrderButtons = document.querySelectorAll(".close-order-button");
       closeOrderButtons.forEach(button => {
@@ -207,25 +253,28 @@
         });
       });
 
-      // ===== MASTER ASSIGN SCRIPTS =====
-      // Загружаем список мастеров и заполняем все dropdown
+      // ===== 2. MASTER ASSIGN SCRIPTS =====
       (async function loadMasters() {
         try {
           const res = await fetch('/admin/masters');
           const masters = await res.json();
           const selects = document.querySelectorAll('.master-select');
           selects.forEach(sel => {
+            const currentMasterId = sel.getAttribute('data-current-master');
             masters.forEach(m => {
               const opt = document.createElement('option');
               opt.value = m.employes_id;
               opt.textContent = `${m.first_name} ${m.last_name}`;
+              opt.className = 'master-option';
+              if (currentMasterId && m.employes_id == currentMasterId) {
+                opt.selected = true;
+              }
               sel.appendChild(opt);
             });
           });
         } catch(e) { console.error('Ошибка загрузки мастеров:', e); }
       })();
 
-      // Обработка кнопки "Назначить"
       document.querySelectorAll('.assign-master-button').forEach(btn => {
         btn.addEventListener('click', async () => {
           const orderId = btn.getAttribute('data-order-id');
@@ -245,13 +294,136 @@
         });
       });
 
-      // ===== ADMIN TICKET SYSTEM SCRIPTS =====
+      // ===== 3. INVENTORY EDITING SCRIPTS =====
+      const descPopup = document.getElementById('description-popup');
+      const closeDesc = document.querySelector('.close-desc');
+      const saveDescBtn = document.getElementById('save-description-btn');
+      const descTextarea = document.getElementById('edit-description-text');
+      let currentEditingId = null;
+
+      // Inline editing for ID, Name, quantity and price
+      document.querySelectorAll('.editable-cell').forEach(cell => {
+          cell.addEventListener('click', function() {
+              if (this.querySelector('input')) return;
+
+              const field = this.getAttribute('data-field');
+              const valueSpan = this.querySelector('.cell-value');
+              const originalValue = valueSpan.textContent.trim();
+              const tr = this.closest('tr');
+              const originalId = tr.getAttribute('data-id');
+
+              const input = document.createElement('input');
+              input.type = (field === 'inventory_name' ? 'text' : 'number');
+              input.value = originalValue;
+              input.className = 'editable-input';
+              if (field === 'inventory_name') input.style.width = '200px';
+              
+              this.innerHTML = '';
+              this.appendChild(input);
+              input.focus();
+
+              const save = async () => {
+                  const newValue = input.value;
+                  if (newValue === originalValue) {
+                      this.innerHTML = `<span class="cell-value ${field === 'inventory_id' ? 'text-muted' : ''}" ${field === 'inventory_id' ? 'style="font-weight: 700;"' : ''}>${originalValue}</span>${field === 'inventory_price' ? ' ₽' : ''}`;
+                      return;
+                  }
+
+                  try {
+                      // Get other fields' values from the row
+                      const newId = field === 'inventory_id' ? newValue : originalId;
+                      const name = field === 'inventory_name' ? newValue : tr.querySelector('[data-field="inventory_name"] .cell-value').textContent.trim();
+                      const qty = field === 'quantity_in_stock' ? newValue : tr.querySelector('[data-field="quantity_in_stock"] .cell-value').textContent.trim();
+                      const price = field === 'inventory_price' ? newValue : tr.querySelector('[data-field="inventory_price"] .cell-value').textContent.trim();
+                      const desc = tr.querySelector('.desc-button').getAttribute('data-desc');
+
+                      const res = await fetch(`/admin/update-inventory/${originalId}`, {
+                          method: 'PUT',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({
+                              newId: newId,
+                              inventory_name: name,
+                              quantity_in_stock: qty,
+                              inventory_price: price,
+                              inventory_discription: desc
+                          })
+                      });
+
+                      if (res.ok) {
+                          this.innerHTML = `<span class="cell-value ${field === 'inventory_id' ? 'text-muted' : ''}" ${field === 'inventory_id' ? 'style="font-weight: 700;"' : ''}>${newValue}</span>${field === 'inventory_price' ? ' ₽' : ''}`;
+                          if (field === 'inventory_id') {
+                              tr.setAttribute('data-id', newValue);
+                              tr.querySelector('.desc-button').setAttribute('data-id', newValue);
+                              tr.querySelector('.delete-item-button').setAttribute('data-inventory-id', newValue);
+                          }
+                      } else {
+                          alert('Ошибка обновления');
+                          this.innerHTML = `<span class="cell-value ${field === 'inventory_id' ? 'text-muted' : ''}" ${field === 'inventory_id' ? 'style="font-weight: 700;"' : ''}>${originalValue}</span>${field === 'inventory_price' ? ' ₽' : ''}`;
+                      }
+                  } catch (e) {
+                      console.error(e);
+                      this.innerHTML = `<span class="cell-value ${field === 'inventory_id' ? 'text-muted' : ''}" ${field === 'inventory_id' ? 'style="font-weight: 700;"' : ''}>${originalValue}</span>${field === 'inventory_price' ? ' ₽' : ''}`;
+                  }
+              };
+
+              input.onblur = save;
+              input.onkeydown = (e) => { if (e.key === 'Enter') input.blur(); };
+          });
+      });
+
+      // Description modal logic
+      document.querySelectorAll('.desc-button').forEach(btn => {
+          btn.addEventListener('click', () => {
+              currentEditingId = btn.getAttribute('data-id');
+              descTextarea.value = btn.getAttribute('data-desc') || '';
+              descPopup.style.display = 'block';
+          });
+      });
+
+      closeDesc.onclick = () => { descPopup.style.display = 'none'; };
+      
+      saveDescBtn.onclick = async () => {
+          if (!currentEditingId) return;
+          const newDesc = descTextarea.value;
+          const tr = document.querySelector(`tr[data-id="${currentEditingId}"]`);
+          const name = tr.querySelector('[data-field="inventory_name"] .cell-value').textContent.trim();
+          const qty = tr.querySelector('[data-field="quantity_in_stock"] .cell-value').textContent.trim();
+          const price = tr.querySelector('[data-field="inventory_price"] .cell-value').textContent.trim();
+
+          try {
+              const res = await fetch(`/admin/update-inventory/${currentEditingId}`, {
+                  method: 'PUT',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                      newId: currentEditingId,
+                      inventory_name: name,
+                      quantity_in_stock: qty,
+                      inventory_price: price,
+                      inventory_discription: newDesc
+                  })
+              });
+
+              if (res.ok) {
+                  const btn = tr.querySelector('.desc-button');
+                  btn.setAttribute('data-desc', newDesc);
+                  descPopup.style.display = 'none';
+                  alert('Описание сохранено');
+              } else {
+                  alert('Ошибка сохранения описания');
+              }
+          } catch (e) {
+              console.error(e);
+              alert('Ошибка сервера');
+          }
+      };
+
+      // ===== 4. ADMIN TICKET SYSTEM SCRIPTS =====
       (function() {
         const ticketsGrid = document.getElementById('ticketsGrid');
         const windowsRoot = document.getElementById('adminChatWindows');
         const openTickets = new Map(); // customerId -> { el, lastId }
 
-        function escapeHtml(t) { return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+        function escapeHtml(t) { return t ? t.toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') : ''; }
         function formatTime(dt) { return new Date(dt).toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit'}); }
 
         function loadTickets() {
@@ -302,7 +474,7 @@
                         <div class="chat-win-title">Тикет: ${escapeHtml(user.first_name + ' ' + user.last_name)}</div>
                         <div class="chat-win-subtitle">${user.phone || ''} | ${user.email || ''}</div>
                     </div>
-                    <button type="button" class="chat-win-close" id="close-${cid}" title="Закрыть">&times;</button>
+                    <button type="button" class="chat-win-close" title="Закрыть">&times;</button>
                 </div>
                 <div class="chat-win-messages"></div>
                 <div class="chat-win-input-area">
@@ -315,21 +487,18 @@
             const msgBox = win.querySelector('.chat-win-messages');
             const input  = win.querySelector('input');
             const btn    = win.querySelector('button');
-            const close  = win.querySelector('.chat-win-close');
-
+            
             const ticketData = { el: win, lastId: 0, msgBox };
             openTickets.set(cid, ticketData);
 
             const closeBtn = win.querySelector('.chat-win-close');
-            closeBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
+            closeBtn.onclick = () => {
                 win.classList.add('closing');
                 setTimeout(() => {
                     win.remove();
                     openTickets.delete(cid);
                 }, 200);
-            });
+            };
 
             btn.onclick = () => sendMessage(cid, input, ticketData);
             input.onkeydown = (e) => { if(e.key === 'Enter') sendMessage(cid, input, ticketData); };
@@ -363,7 +532,7 @@
                             const newMsgs = msgs.filter(m => m.id > ticket.lastId);
                             if (newMsgs.length > 0) {
                                 newMsgs.forEach(m => appendMsg(ticket, m));
-                                loadTickets(); // Refresh list to update unread
+                                loadTickets();
                             }
                         }
                     });
@@ -396,9 +565,7 @@
                             openTickets.delete(cid);
                         }
                         loadTickets();
-                    } else {
-                        alert('Ошибка при удалении тикета');
-                    }
+                    } else { alert('Ошибка при удалении тикета'); }
                 });
         }
 
@@ -407,19 +574,21 @@
         setInterval(pollAll, 3000);
       })();
 
-      // ===== TAB SWITCHING LOGIC =====
+      // ===== 5. TAB SWITCHING LOGIC =====
       document.querySelectorAll('.tab-btn').forEach(button => {
         button.addEventListener('click', () => {
           const tabName = button.getAttribute('data-tab');
-          
-          // Update buttons
           document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
           button.classList.add('active');
-          
-          // Update panels
           document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
           document.getElementById(`${tabName}-tab`).classList.add('active');
         });
+      });
+
+      // Global window click for popups
+      window.addEventListener('click', (e) => {
+          if (e.target == addItemPopup) addItemPopup.style.display = "none";
+          if (e.target == descPopup) descPopup.style.display = "none";
       });
     </script>
   </body>

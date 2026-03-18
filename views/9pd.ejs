@@ -87,7 +87,7 @@
               </div>
 
               <div class="form-group">
-                <label for="services">Услуги:</label>
+                <label for="services">Услуги: <span style="font-weight: normal; font-size: 0.85rem; color: var(--text-muted);">(без учёта расходников, стоимость расходников смотреть <a href="#" id="view-inventory-link" style="color: var(--accent-color); text-decoration: underline;">здесь</a>)</span></label>
                 <div class="services-groups">
                   <div class="service-category">
                     <h3>Бензин</h3>
@@ -287,7 +287,35 @@
         </div>
       </div>
     </div>
-  </footer>
+  <!-- INVENTORY MODAL -->
+  <div id="inventory-popup" class="modal-premium" style="display: none;">
+    <div class="modal-premium-content">
+      <div class="modal-premium-header">
+        <h2 style="font-size: 1.5rem; color: var(--text-color); margin: 0;">Стоимость расходных материалов</h2>
+        <span class="close-inventory">&times;</span>
+      </div>
+      <div class="modal-premium-body">
+        <table class="inventory-preview-table">
+          <thead>
+            <tr>
+              <th align="left">Наименование</th>
+              <th align="left">Описание</th>
+              <th align="right">Цена</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% inventory.forEach(item => { %>
+              <tr>
+                <td style="font-weight: 600; padding: 12px 10px;"><%= item.inventory_name %></td>
+                <td style="color: var(--text-muted); font-size: 0.85rem; padding: 12px 10px;"><%= item.inventory_discription %></td>
+                <td align="right" style="color: var(--accent-color); font-weight: 700; padding: 12px 10px;"><%= item.inventory_price %> ₽</td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 
   <!-- OVERLAY & SIDE NAV -->
   <div class="nav-overlay" id="navOverlay"></div>
@@ -480,6 +508,22 @@
         hBtn.onclick = () => toggleSNav(!sNav.classList.contains('open'));
         if (sCloseBtn) sCloseBtn.onclick = () => toggleSNav(false);
         sOverlay.onclick = () => toggleSNav(false);
+      }
+
+      // Inventory Popup Logic
+      const invLink = document.getElementById('view-inventory-link');
+      const invPopup = document.getElementById('inventory-popup');
+      const invClose = document.querySelector('.close-inventory');
+
+      if (invLink && invPopup && invClose) {
+        invLink.onclick = (e) => {
+          e.preventDefault();
+          invPopup.style.display = 'block';
+        };
+        invClose.onclick = () => { invPopup.style.display = 'none'; };
+        window.onclick = (e) => {
+          if (e.target === invPopup) invPopup.style.display = 'none';
+        }
       }
 
       updateTotalPrice();

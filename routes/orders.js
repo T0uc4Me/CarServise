@@ -17,6 +17,13 @@ router.get("/:id", async (req, res) => {
         return res.status(404).send("Заказ не найден");
       }
 
+      // Проверка прав доступа: админ, мастер или владелец заказа
+      const isAuthorized = req.session.adminId || req.session.masterId || (req.session.customerId && req.session.customerId === servis_orders.Customers_customer_id);
+      
+      if (!isAuthorized) {
+        return res.status(403).send("Доступ запрещен. Вы можете просматривать только свои заказы.");
+      }
+
       // 2. Получаем информацию о клиенте
       db.get("SELECT * FROM Customers WHERE customer_id = ?", [servis_orders.Customers_customer_id], (err, customer) => {
         if (err) {
@@ -78,7 +85,10 @@ router.get("/:id", async (req, res) => {
                       hasMaster: !!masterData
                     });
 
-                    res.render("order-details", {
+                    // Определяем, какой шаблон рендерить
+                    const viewName = (req.session.adminId || req.session.masterId) ? "order-details" : "customer-order-details";
+
+                    res.render(viewName, {
                       servis_orders: servis_orders || {},
                       customer: customerData,
                       car: carData,

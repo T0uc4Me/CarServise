@@ -13,6 +13,13 @@ function checkMasterRole(req, res, next) {
   next();
 }
 
+// GET /master/logout — выход
+router.get("/logout", (req, res) => {
+  delete req.session.masterId;
+  delete req.session.masterRole;
+  res.redirect("/admin/login");
+});
+
 // GET /master — главная страница мастера: список назначенных заказов
 router.get("/", checkMasterRole, (req, res) => {
   const masterId = req.session.masterId;
@@ -112,11 +119,125 @@ router.get("/order/:id", checkMasterRole, (req, res) => {
   });
 });
 
-// GET /master/logout
-router.get("/logout", (req, res) => {
-  delete req.session.masterId;
-  delete req.session.masterRole;
-  res.redirect("/admin/login");
+// POST /master/update-profile — обновление профиля мастера
+router.post("/update-profile", checkMasterRole, (req, res) => {
+  const masterId = req.session.masterId;
+  const { first_name, last_name, phone } = req.body;
+
+  if (!first_name || !last_name) {
+    return res.status(400).json({ error: "Имя и фамилия обязательны" });
+  }
+
+  db.run(
+    "UPDATE Employes SET first_name = ?, last_name = ?, phone = ? WHERE employes_id = ?",
+    [first_name, last_name, phone, masterId],
+    function(err) {
+      if (err) {
+        console.error("Ошибка обновления профиля:", err);
+        return res.status(500).json({ error: "Ошибка сервера" });
+      }
+      res.json({ ok: true });
+    }
+  );
+});
+
+// GET /master/inventory — получение всего инвентаря для мастера
+router.get("/inventory", checkMasterRole, (req, res) => {
+  console.log("Master requested inventory. Session Master ID:", req.session.masterId);
+  db.all("SELECT * FROM Inventory WHERE CAST(quantity_in_stock AS INTEGER) > 0 ORDER BY inventory_id ASC", [], (err, rows) => {
+    if (err) {
+      console.error("Database error in GET /master/inventory:", err);
+      return res.status(500).json({ error: "Ошибка базы данных: " + err.message });
+    }
+    if (!rows || rows.length === 0) {
+      console.log("No items found in Inventory with stock > 0");
+    }
+    res.json(rows);
+  });
+});
+
+// POST /master/order/:id/add-parts — пакетное добавление запчастей
+router.post("/order/:id/add-parts", checkMasterRole, async (req, res) => {
+  const orderId = req.params.id;
+  const masterId = req.session.masterId;
+  const { parts } = req.body; // Ожидается массив [{ inventory_id, quantity }]
+
+  if (!Array.isArray(parts) || parts.length === 0) {
+    return res.status(400).json({ error: "Список запчастей пуст" });
+  }
+
+  try {
+    db.serialize(() => {
+      let totalOrderIncrease = 0;
+      let processedCount = 0;
+      let errors = [];
+
+      parts.forEach(p => {
+        const { inventory_id, quantity } = p;
+        const qty = parseInt(quantity);
+
+        if (!inventory_id || isNaN(qty) || qty <= 0) {
+          errors.push(`Неверные данные для ID ${inventory_id}`);
+          return;
+        }
+
+        // Синхронная цепочка действий для каждой запчасти
+        db.get("SELECT * FROM Inventory WHERE inventory_id = ?", [inventory_id], (err, part) => {
+          if (err || !part) {
+            errors.push(`Запчасть ${inventory_id} не найдена`);
+            return;
+          }
+
+          const currentStock = parseInt(part.quantity_in_stock);
+          if (currentStock < qty) {
+            errors.push(`Недостаточно ${part.inventory_name} на складе`);
+            return;
+          }
+
+          const partPrice = parseFloat(part.inventory_price);
+          const itemTotal = partPrice * qty;
+          totalOrderIncrease += itemTotal;
+
+          // Обновляем склад
+          db.run("UPDATE Inventory SET quantity_in_stock = ? WHERE inventory_id = ?", [(currentStock - qty).toString(), inventory_id]);
+
+          // Добавляем в Servis_parts
+          db.run(
+            "INSERT INTO Servis_parts (inventory_id, quantity_parts, total_price, Servis_orders_order_id) VALUES (?, ?, ?, ?)",
+            [inventory_id, qty.toString(), itemTotal.toString(), orderId],
+            function(err) {
+              if (!err) {
+                const spId = this.lastID;
+                // Привязываем мастера
+                db.run("INSERT INTO Servis_parts_has_Employes (Servis_parts_Servis_part_id, Employes_employes_id) VALUES (?, ?)", [spId, masterId]);
+              }
+            }
+          );
+          
+          processedCount++;
+          
+          // Если это была последняя запчасть в массиве
+          if (processedCount + errors.length === parts.length) {
+            // ФИНАЛЬНОЕ ОБНОВЛЕНИЕ ЗАКАЗА
+            db.run(
+              "UPDATE Servis_orders SET total_amount = CAST(total_amount AS FLOAT) + ? WHERE order_id = ?",
+              [totalOrderIncrease, orderId],
+              () => {
+                if (errors.length > 0) {
+                  res.status(207).json({ ok: true, message: "Выполнено частично", errors });
+                } else {
+                  res.json({ ok: true });
+                }
+              }
+            );
+          }
+        });
+      });
+    });
+  } catch (error) {
+    console.error("Batch add error:", error);
+    res.status(500).json({ error: "Внутренняя ошибка сервера" });
+  }
 });
 
 module.exports = router;

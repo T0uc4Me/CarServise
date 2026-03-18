@@ -10,14 +10,16 @@
     <header>
       <div class="header-container">
         <div class="header-logo">
-          <div class="header-logo-icon">🔧</div>
+          <div class="header-logo-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+          </div>
           <div>
             <div class="header-title">Заказ #<%= servis_orders.order_id %></div>
             <div class="header-subtitle">Просмотр деталей</div>
           </div>
         </div>
         <div class="user-controls">
-          <a href="/master" class="back-btn">← Назад</a>
+          <a href="/master" class="back-btn">Назад</a>
           <a href="/master/logout" class="logout-btn">Выйти</a>
         </div>
       </div>
@@ -121,19 +123,28 @@
 
         <!-- Запчасти — полная ширина -->
         <div class="detail-section full-width-section">
-          <h2>Использованные запчасти</h2>
+          <div class="section-actions">
+            <h2>Использованные запчасти</h2>
+            <button class="action-btn-main" id="open-inventory-btn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg>
+              Добавить запчасть
+            </button>
+          </div>
+          
           <% if (parts && parts.length > 0) { %>
           <table class="data-table">
             <thead>
               <tr>
+                <th style="width: 50px;">#</th>
                 <th>Название</th>
                 <th>Количество</th>
                 <th>Цена за ед.</th>
               </tr>
             </thead>
             <tbody>
-              <% parts.forEach(p => { %>
+              <% parts.forEach((p, index) => { %>
               <tr>
+                <td><%= index + 1 %></td>
                 <td><%= p.inventory_name %></td>
                 <td><%= p.quantity %></td>
                 <td><%= p.inventory_price %> ₽</td>
@@ -148,5 +159,178 @@
 
       </div>
     </main>
+
+    <!-- Modal for Inventory selection -->
+    <div id="inventory-modal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+            Выберите запчасть со склада
+          </h2>
+          <span class="close-modal">&times;</span>
+        </div>
+        
+        <input type="text" id="inventory-search" class="inventory-search" placeholder="Поиск по названию или описанию..." />
+        
+        <div class="inventory-table-container">
+          <table class="data-table" id="inventory-table">
+            <thead>
+              <tr>
+                <th style="width: 50px;">#</th>
+                <th>Название</th>
+                <th>В наличии</th>
+                <th>Цена</th>
+                <th>Кол-во</th>
+              </tr>
+            </thead>
+            <tbody id="inventory-list">
+              <!-- Dynamically loaded -->
+            </tbody>
+          </table>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 15px;">
+            <button class="edit-btn" onclick="document.getElementById('inventory-modal').style.display='none'">Отмена</button>
+            <button class="action-btn-main" id="add-selected-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                Принять выбранные
+            </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const modal = document.getElementById('inventory-modal');
+      const openBtn = document.getElementById('open-inventory-btn');
+      const closeBtn = document.querySelector('.close-modal');
+      const addSelectedBtn = document.getElementById('add-selected-btn');
+      const inventoryList = document.getElementById('inventory-list');
+      const searchInput = document.getElementById('inventory-search');
+      let allInventory = [];
+
+      // Open modal
+      openBtn.onclick = async () => {
+        modal.style.display = 'block';
+        if (allInventory.length === 0) {
+          await loadInventory();
+        }
+      }
+
+      // Close modal
+      closeBtn.onclick = () => { modal.style.display = 'none'; }
+      window.onclick = (e) => { if (e.target == modal) modal.style.display = 'none'; }
+
+      // Load inventory from server
+      async function loadInventory() {
+        try {
+          inventoryList.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px;">Загрузка склада...</td></tr>';
+          const res = await fetch('/master/inventory');
+          const data = await res.json();
+          
+          if (!res.ok) {
+            throw new Error(data.error || 'Ошибка загрузки');
+          }
+          
+          allInventory = data;
+          renderInventory(allInventory);
+        } catch (e) {
+          console.error(e);
+          inventoryList.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 40px;">
+            <div style="color: var(--master-danger); margin-bottom: 10px;">⚠️ Ошибка загрузки: ${e.message}</div>
+            <button class="edit-btn" onclick="loadInventory()">Повторить попытку</button>
+          </td></tr>`;
+        }
+      }
+
+      // Render inventory items
+      function renderInventory(items) {
+        inventoryList.innerHTML = '';
+        if (items.length === 0) {
+          inventoryList.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px;">Запчасти не найдены</td></tr>';
+          return;
+        }
+
+        items.forEach((item, index) => {
+          const tr = document.createElement('tr');
+          tr.setAttribute('data-id', item.inventory_id);
+          tr.innerHTML = `
+            <td>${index + 1}</td>
+            <td>
+              <div style="font-weight:700;">${item.inventory_name}</div>
+              <div style="font-size:0.75rem; color:var(--master-text-muted);">${item.inventory_discription || ''}</div>
+            </td>
+            <td>${item.quantity_in_stock}</td>
+            <td>${item.inventory_price} ₽</td>
+            <td>
+              <input type="number" class="qty-input" value="0" min="0" max="${item.quantity_in_stock}" data-id="${item.inventory_id}">
+            </td>
+          `;
+          inventoryList.appendChild(tr);
+        });
+      }
+
+      // Search logic
+      searchInput.oninput = () => {
+        const query = searchInput.value.toLowerCase();
+        const filtered = allInventory.filter(item => 
+          item.inventory_name.toLowerCase().includes(query) || 
+          (item.inventory_discription && item.inventory_discription.toLowerCase().includes(query))
+        );
+        renderInventory(filtered);
+      }
+
+      // Batch add parts to order
+      addSelectedBtn.onclick = async () => {
+        const selectedParts = [];
+        const inputs = document.querySelectorAll('.qty-input');
+        
+        inputs.forEach(input => {
+          const val = parseInt(input.value);
+          if (val > 0) {
+            selectedParts.push({
+              inventory_id: parseInt(input.getAttribute('data-id')),
+              quantity: val
+            });
+          }
+        });
+
+        if (selectedParts.length === 0) {
+          alert('Выберите хотя бы одну запчасть, указав её количество');
+          return;
+        }
+
+        addSelectedBtn.disabled = true;
+        addSelectedBtn.innerText = 'Обработка...';
+
+        try {
+          const res = await fetch(`/master/order/<%= servis_orders.order_id %>/add-parts`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ parts: selectedParts })
+          });
+
+          const data = await res.json();
+
+          if (res.ok) {
+            if (res.status === 207) {
+              alert('Добавлено частично:\n' + data.errors.join('\n'));
+            } else {
+              alert('Запчасти успешно добавлены к заказу');
+            }
+            window.location.reload();
+          } else {
+            alert('Ошибка: ' + (data.error || 'неизвестная ошибка'));
+            addSelectedBtn.disabled = false;
+            addSelectedBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> Принять выбранные';
+          }
+        } catch (e) {
+          console.error(e);
+          alert('Произошла ошибка при отправке запроса');
+          addSelectedBtn.disabled = false;
+          addSelectedBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> Принять выбранные';
+        }
+      }
+    </script>
   </body>
 </html>

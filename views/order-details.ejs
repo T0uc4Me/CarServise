@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Детали заказа №<%= servis_orders.order_id %> | CarService</title>
     <link rel="stylesheet" href="/css/order-details.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@500&display=swap"
+        rel="stylesheet">
     <style>
         .assign-container {
             margin-top: 15px;
@@ -13,6 +16,7 @@
             gap: 10px;
             flex-wrap: wrap;
         }
+
         .master-select-small {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--border);
@@ -25,6 +29,7 @@
             flex: 1;
             min-width: 200px;
         }
+
         .btn-assign-small {
             background: var(--primary);
             color: white;
@@ -35,22 +40,32 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
+
         .btn-assign-small:hover {
             opacity: 0.9;
             transform: translateY(-2px);
         }
+
+        .master-option {
+            background-color: #1a1a2e !important;
+            color: #ffffff !important;
+        }
     </style>
 </head>
+
 <body>
     <div class="details-wrapper">
         <header class="details-header">
             <div>
-                <h1>Заказ #<%= servis_orders.order_id %></h1>
+                <h1>Заказ #<%= servis_orders.order_id %>
+                </h1>
                 <p style="color: var(--text-muted); margin: 5px 0 0 0;">Управление деталями и историей работ</p>
             </div>
             <div class="nav-actions">
                 <a href="/admin" class="btn-back">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5m7 7l-7-7 7-7"/></svg>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5m7 7l-7-7 7-7" />
+                    </svg>
                     Назад в панель
                 </a>
                 <a href="/auth/logout" class="btn-logout">Выход</a>
@@ -65,22 +80,29 @@
                     <tr>
                         <td>Текущий статус</td>
                         <td>
-                            <span class="status-badge <%= servis_orders.order_status === 'active' ? 'status-active' : 'status-completed' %>">
+                            <span
+                                class="status-badge <%= servis_orders.order_status === 'active' ? 'status-active' : 'status-completed' %>">
                                 <%= servis_orders.order_status || 'Обработка' %>
                             </span>
                         </td>
                     </tr>
                     <tr>
                         <td>Дата оформления</td>
-                        <td><%= servis_orders.servis_data || 'Нет данных' %></td>
+                        <td>
+                            <%= servis_orders.servis_data || 'Нет данных' %>
+                        </td>
                     </tr>
                     <tr>
                         <td>Адрес выполнения</td>
-                        <td style="font-size: 0.9rem;"><%= servis_orders.address || '—' %></td>
+                        <td style="font-size: 0.9rem;">
+                            <%= servis_orders.address || '—' %>
+                        </td>
                     </tr>
                     <tr>
                         <td>Итоговая сумма</td>
-                        <td class="price-tag" style="font-size: 1.2rem;"><%= servis_orders.total_amount || 0 %> ₽</td>
+                        <td class="price-tag" style="font-size: 1.2rem;">
+                            <%= servis_orders.total_amount || 0 %> ₽
+                        </td>
                     </tr>
                 </table>
             </div>
@@ -88,31 +110,40 @@
             <!-- Master Info Card -->
             <div class="info-card">
                 <h2>Ответственный мастер</h2>
-                <% if (typeof master !== 'undefined' && master) { %>
-                <table class="details-table">
-                    <tr>
-                        <td>ФИО Мастера</td>
-                        <td><%= master.first_name %> <%= master.last_name %></td>
-                    </tr>
-                    <tr>
-                        <td>Телефон</td>
-                        <td><%= master.phone || '—' %></td>
-                    </tr>
-                    <tr>
-                        <td>Email</td>
-                        <td><%= master.email || '—' %></td>
-                    </tr>
-                </table>
-                <% } else { %>
-                <p style="color: var(--text-muted); margin: 0 0 15px 0;">Мастер еще не назначен на этот заказ.</p>
-                <% } %>
-                
-                <div class="assign-container">
-                    <select id="masterSelect" class="master-select-small">
-                        <option value="">— Выберите мастера —</option>
-                    </select>
-                    <button id="assignBtn" class="btn-assign-small">Назначить</button>
-                </div>
+                <% if (typeof master !=='undefined' && master) { %>
+                    <table class="details-table">
+                        <tr>
+                            <td>ФИО Мастера</td>
+                            <td>
+                                <%= master.first_name %>
+                                    <%= master.last_name %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Телефон</td>
+                            <td>
+                                <%= master.phone || '—' %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Email</td>
+                            <td>
+                                <%= master.email || '—' %>
+                            </td>
+                        </tr>
+                    </table>
+                    <% } else { %>
+                        <p style="color: var(--text-muted); margin: 0 0 15px 0;">Мастер еще не назначен на этот заказ.
+                        </p>
+                        <% } %>
+
+                            <div class="assign-container">
+                                <select id="masterSelect" class="master-select-small"
+                                    data-current-master="<%= servis_orders.Employes_employes_id %>">
+                                    <option value="" class="master-option">— Выберите мастера —</option>
+                                </select>
+                                <button id="assignBtn" class="btn-assign-small">Назначить</button>
+                            </div>
             </div>
 
             <!-- Customer Info Card -->
@@ -121,19 +152,26 @@
                 <table class="details-table">
                     <tr>
                         <td>ФИО</td>
-                        <td><%= customer.FIO || 'Не указано' %></td>
+                        <td>
+                            <%= customer.FIO || 'Не указано' %>
+                        </td>
                     </tr>
                     <tr>
                         <td>Телефон</td>
-                        <td><%= customer.phone || '—' %></td>
+                        <td>
+                            <%= customer.phone || '—' %>
+                        </td>
                     </tr>
                     <tr>
                         <td>Электронная почта</td>
-                        <td><%= customer.email || '—' %></td>
+                        <td>
+                            <%= customer.email || '—' %>
+                        </td>
                     </tr>
                     <tr style="border-bottom: none;">
                         <td>ID Клиента</td>
-                        <td>#<%= customer.customer_id || '?' %></td>
+                        <td>#<%= customer.customer_id || '?' %>
+                        </td>
                     </tr>
                 </table>
             </div>
@@ -144,23 +182,33 @@
                 <table class="details-table">
                     <tr>
                         <td>Марка</td>
-                        <td><%= (car && typeof car.mark !== 'undefined') ? car.mark : 'Не указана' %></td>
+                        <td>
+                            <%= (car && typeof car.mark !=='undefined' ) ? car.mark : 'Не указана' %>
+                        </td>
                     </tr>
                     <tr>
                         <td>Модель</td>
-                        <td><%= (car && typeof car.model !== 'undefined') ? car.model : 'Не указана' %></td>
+                        <td>
+                            <%= (car && typeof car.model !=='undefined' ) ? car.model : 'Не указана' %>
+                        </td>
                     </tr>
                     <tr>
                         <td>Год выпуска</td>
-                        <td><%= (car && typeof car.year !== 'undefined') ? car.year : '—' %></td>
+                        <td>
+                            <%= (car && typeof car.year !=='undefined' ) ? car.year : '—' %>
+                        </td>
                     </tr>
                     <tr>
                         <td>VIN / Wincode</td>
-                        <td style="font-family: 'JetBrains Mono'; font-size: 0.85rem;"><%= (car && typeof car.wincode !== 'undefined') ? car.wincode : '—' %></td>
+                        <td style="font-family: 'JetBrains Mono'; font-size: 0.85rem;">
+                            <%= (car && typeof car.wincode !=='undefined' ) ? car.wincode : '—' %>
+                        </td>
                     </tr>
                     <tr>
-                      <td>Гос. номер</td>
-                      <td><%= (car && typeof car.gos_nomer !== 'undefined') ? car.gos_nomer : '—' %></td>
+                        <td>Гос. номер</td>
+                        <td>
+                            <%= (car && typeof car.gos_nomer !=='undefined' ) ? car.gos_nomer : '—' %>
+                        </td>
                     </tr>
                 </table>
             </div>
@@ -168,65 +216,83 @@
             <!-- Services Section -->
             <div class="info-card full-width">
                 <h2>Выполненные услуги</h2>
-                <% if (services && services.length > 0) { %>
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Название услуги</th>
-                            <th style="text-align: center;">Кол-во</th>
-                            <th style="text-align: right;">Цена за ед.</th>
-                            <th style="text-align: right;">Итого</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% services.forEach(service => { %>
-                        <tr>
-                            <td><%= service.servis_name %></td>
-                            <td style="text-align: center;"><%= service.quantity %></td>
-                            <td style="text-align: right;"><%= service.servis_price %> ₽</td>
-                            <td style="text-align: right;" class="price-tag"><%= (service.servis_price * service.quantity) %> ₽</td>
-                        </tr>
-                        <% }); %>
-                    </tbody>
-                </table>
-                <% } else { %>
-                <p style="color: var(--text-muted); text-align: center; margin: 40px 0;">Услуги в данном заказе не зафиксированы</p>
-                <% } %>
+                <% if (services && services.length> 0) { %>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Название услуги</th>
+                                <th style="text-align: center;">Кол-во</th>
+                                <th style="text-align: right;">Цена за ед.</th>
+                                <th style="text-align: right;">Итого</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% services.forEach(service=> { %>
+                                <tr>
+                                    <td>
+                                        <%= service.servis_name %>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <%= service.quantity %>
+                                    </td>
+                                    <td style="text-align: right;">
+                                        <%= service.servis_price %> ₽
+                                    </td>
+                                    <td style="text-align: right;" class="price-tag">
+                                        <%= (service.servis_price * service.quantity) %> ₽
+                                    </td>
+                                </tr>
+                                <% }); %>
+                        </tbody>
+                    </table>
+                    <% } else { %>
+                        <p style="color: var(--text-muted); text-align: center; margin: 40px 0;">Услуги в данном заказе
+                            не зафиксированы</p>
+                        <% } %>
             </div>
 
             <!-- Inventory Section -->
             <div class="info-card full-width">
                 <h2>Использованные запчасти</h2>
-                <% if (parts && parts.length > 0) { %>
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Наименование</th>
-                            <th style="text-align: center;">Количество</th>
-                            <th style="text-align: right;">Цена</th>
-                            <th style="text-align: right;">Сумма</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% parts.forEach(part => { %>
-                        <tr>
-                            <td><%= part.inventory_name %></td>
-                            <td style="text-align: center;"><%= part.quantity %></td>
-                            <td style="text-align: right;"><%= part.inventory_price %> ₽</td>
-                            <td style="text-align: right;" class="price-tag"><%= (part.inventory_price * part.quantity) %> ₽</td>
-                        </tr>
-                        <% }); %>
-                    </tbody>
-                </table>
-                <% } else { %>
-                <p style="color: var(--text-muted); text-align: center; margin: 40px 0;">Запчасти в данном заказе не использовались</p>
-                <% } %>
+                <% if (parts && parts.length> 0) { %>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Наименование</th>
+                                <th style="text-align: center;">Количество</th>
+                                <th style="text-align: right;">Цена</th>
+                                <th style="text-align: right;">Сумма</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% parts.forEach(part=> { %>
+                                <tr>
+                                    <td>
+                                        <%= part.inventory_name %>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <%= part.quantity %>
+                                    </td>
+                                    <td style="text-align: right;">
+                                        <%= part.inventory_price %> ₽
+                                    </td>
+                                    <td style="text-align: right;" class="price-tag">
+                                        <%= (part.inventory_price * part.quantity) %> ₽
+                                    </td>
+                                </tr>
+                                <% }); %>
+                        </tbody>
+                    </table>
+                    <% } else { %>
+                        <p style="color: var(--text-muted); text-align: center; margin: 40px 0;">Запчасти в данном
+                            заказе не использовались</p>
+                        <% } %>
             </div>
         </div>
     </div>
 
     <script>
-        const orderId = <%= servis_orders.order_id %>;
+        const orderId = "<%= servis_orders.order_id %>";
 
         // Загрузка списка мастеров
         async function loadMasters() {
@@ -234,11 +300,16 @@
                 const res = await fetch('/admin/masters');
                 const masters = await res.json();
                 const select = document.getElementById('masterSelect');
-                
+                const currentMasterId = select.getAttribute('data-current-master');
+
                 masters.forEach(m => {
                     const opt = document.createElement('option');
                     opt.value = m.employes_id;
                     opt.textContent = `${m.first_name} ${m.last_name}`;
+                    opt.className = 'master-option';
+                    if (currentMasterId && m.employes_id == currentMasterId) {
+                        opt.selected = true;
+                    }
                     select.appendChild(opt);
                 });
             } catch (e) {
@@ -277,4 +348,5 @@
         loadMasters();
     </script>
 </body>
+
 </html>

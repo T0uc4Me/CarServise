@@ -1,0 +1,130 @@
+[
+  {
+    "inventory_id": 5,
+    "inventory_name": "Масляный фильтр",
+    "inventory_discription": "Фильтр для двигателя",
+    "quantity_in_stock": "100",
+    "inventory_price": "800",
+    "Employes_employes_id": null
+  },
+  {
+    "inventory_id": 6,
+    "inventory_name": "Комплект шин",
+    "inventory_discription": "Летние шины R16",
+    "quantity_in_stock": "50",
+    "inventory_price": "20000",
+    "Employes_employes_id": null
+  },
+  {
+    "inventory_id": 10,
+    "inventory_name": "Моторное масло 5W-40 (1л)",
+    "inventory_discription": "Синтетическое масло для ТО",
+    "quantity_in_stock": "100",
+    "inventory_price": "1200",
+    "Employes_employes_id": null
+  },
+  {
+    "inventory_id": 11,
+    "inventory_name": "Тормозные колодки (передние)",
+    "inventory_discription": "Комплект передних колодок",
+    "quantity_in_stock": "50",
+    "inventory_price": "2500",
+    "Employes_employes_id": null
+  },
+  {
+    "inventory_id": 12,
+    "inventory_name": "Тормозные колодки (задние)",
+    "inventory_discription": "Комплект задних колодок",
+    "quantity_in_stock": "50",
+    "inventory_price": "1800",
+    "Employes_employes_id": null
+  },
+  {
+    "inventory_id": 13,
+    "inventory_name": "Фильтр воздушный",
+    "inventory_discription": "Элемент фильтрующий воздуха",
+    "quantity_in_stock": "80",
+    "inventory_price": "600",
+    "Employes_employes_id": null
+  },
+  {
+    "inventory_id": 14,
+    "inventory_name": "Фильтр салонный",
+    "inventory_discription": "Фильтр кондиционера",
+    "quantity_in_stock": "80",
+    "inventory_price": "850",
+    "Employes_employes_id": null
+  },
+  {
+    "inventory_id": 15,
+    "inventory_name": "Фильтр топливный",
+    "inventory_discription": "Фильтр тонкой очистки топлива",
+    "quantity_in_stock": "40",
+    "inventory_price": "1100",
+    "Employes_employes_id": null
+  },
+  {
+    "inventory_id": 16,
+    "inventory_name": "Свечи зажигания (к-кт)",
+    "inventory_discription": "Набор для 4-цилиндрового двигателя",
+    "quantity_in_stock": "60",
+    "inventory_price": "2200",
+    "Employes_employes_id": null
+  },
+  {
+    "inventory_id": 17,
+    "inventory_name": "Антифриз G12 (1л)",
+    "inventory_discription": "Охлаждающая жидкость",
+    "quantity_in_stock": "100",
+    "inventory_price": "550",
+    "Employes_employes_id": null
+  },
+  {
+    "inventory_id": 18,
+    "inventory_name": "Батарейка CR2032",
+    "inventory_discription": "Для ключа зажигания",
+    "quantity_in_stock": "200",
+    "inventory_price": "150",
+    "Employes_employes_id": null
+  },
+  {
+    "inventory_id": 19,
+    "inventory_name": "Фреон R134a (100г)",
+    "inventory_discription": "Для заправки кондиционера",
+    "quantity_in_stock": "500",
+    "inventory_price": "450",
+    "Employes_employes_id": null
+  },
+  {
+    "inventory_id": 20,
+    "inventory_name": "Очиститель салона",
+    "inventory_discription": "Химия для детейлинга",
+    "quantity_in_stock": "30",
+    "inventory_price": "700",
+    "Employes_employes_id": null
+  },
+  {
+    "inventory_id": 21,
+    "inventory_name": "Омывающая жидкость (5л)",
+    "inventory_discription": "Зимняя омывайка",
+    "quantity_in_stock": "150",
+    "inventory_price": "350",
+    "Employes_employes_id": null
+  },
+  {
+    "inventory_id": 22,
+    "inventory_name": "Аккумулятор 60Ah",
+    "inventory_discription": "Стартерная батарея",
+    "quantity_in_stock": "20",
+    "inventory_price": "6500",
+    "Employes_employes_id": null
+  },
+  {
+    "inventory_id": 23,
+    "inventory_name": "Тормозная жидкость DOT4",
+    "inventory_discription": "0.5л",
+    "quantity_in_stock": "50",
+    "inventory_price": "400",
+    "Employes_employes_id": null
+  }
+]
