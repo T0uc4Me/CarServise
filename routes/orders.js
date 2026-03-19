@@ -92,7 +92,7 @@ router.get("/:id", async (req, res) => {
                     if (req.session.customerId && servis_orders.Customers_customer_id === req.session.customerId) {
                         // Если зашли со страницы личного кабинета или мы владельцы - показываем клиентскую версию
                         const referer = req.get('Referer') || '';
-                        if (!referer.includes('/admin') && !referer.includes('/master')) {
+                        if (!referer.includes('/admin') && !referer.includes('/master') && !referer.includes('/order-details')) {
                             viewName = "customer-order-details";
                         }
                     }

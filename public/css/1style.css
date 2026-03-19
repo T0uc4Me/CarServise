@@ -7,8 +7,8 @@
   --glass-bg: rgba(255, 255, 255, 0.05);
   --glass-border: rgba(255, 255, 255, 0.1);
   --card-bg: rgba(42, 39, 67, 0.7);
-  --font-main: "Unbounded", sans-serif;
-  --font-display: "Krona One", serif;
+  --font-main: "Inter", sans-serif;
+  --font-display: "Montserrat", sans-serif;
   --transition: all 0.3s ease;
 }
 
